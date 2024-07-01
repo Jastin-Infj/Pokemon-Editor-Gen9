@@ -1,7 +1,6 @@
 import React from 'react';
 import P_ivevSelect from './p_ivevSelect';
 
-
 const P_base = () => {
   return (
     <tr className="text-white w-1/12">

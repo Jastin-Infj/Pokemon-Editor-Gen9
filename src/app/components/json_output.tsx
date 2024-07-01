@@ -1,4 +1,4 @@
-'use client';
+"use server";
 import React from 'react';
 
 const Json_output = () => {
@@ -8,9 +8,10 @@ const Json_output = () => {
 
   return (
     <button 
-      className="bg-blue-500 rounded border text-white"
-      onClick={handleJSONOutput}>
-      JSON 出力
+      className="bg-blue-700 text-fuchsia-400"
+      // onClick={handleJSONOutput}
+      >
+      text
     </button>
   );
 }
