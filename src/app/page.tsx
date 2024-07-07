@@ -1,14 +1,31 @@
 "use server";
+import { PBaseProps } from "@/types";
 import Json_input from "./components/json_input";
 import Json_output from "./components/json_output";
 import P_base from "./components/p_base";
+import MyDropzone from "./components/dropzone";
 
 export default async function Home() {
+  const testPBase: PBaseProps = {
+    id: "001",
+    name: "ピカチュウ",
+    move1: "10まんボルト",
+    move2: "アイアンテール",
+    move3: "でんこうせっか",
+    move4: "ボルテッカー",
+    ability: "せいでんき",
+    item: "でんきだま",
+    nature: "ようき",
+    teratype: "でんき",
+    level: 50
+  };
+
   return (
     <>
         <header>
           <Json_input />
           <Json_output />
+          <MyDropzone />
         </header>
         <main>
           <table className="table-fixed w-full mx-10 my-20">
@@ -29,7 +46,7 @@ export default async function Home() {
               </tr>
             </thead>
             <tbody className="bg-blue-400">
-              <P_base />
+              <P_base {...testPBase} />
             </tbody>
           </table>
         </main>
