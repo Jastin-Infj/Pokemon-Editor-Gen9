@@ -3,7 +3,7 @@ import {useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 
 const MyDropzone = () => {
-  const [hexStrings , setHexStrings ] = useState([]);
+  const [hexStrings , setHexStrings ] = useState<string[]>([]);
   const inputRef = useRef(null);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -94,9 +94,9 @@ const MyDropzone = () => {
 
   return (
     <>
-      <div {...getRootProps()} className='border m-3 text-center'>
+      <div {...getRootProps()} className='border my-20 h-[4rem] text-center'>
         <input {...getInputProps()} ref={inputRef}/>
-        <p>ファイルをここにドロップするか、クリックして選択してください</p>
+        <p className='text-center translate-y-1/2'>ファイルをここにドロップするか、クリックして選択してください</p>
       </div>
       {hexStrings.map((hexString, index) => (
         <p key={index}>{hexString}</p>
