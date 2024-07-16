@@ -1,9 +1,8 @@
 "use server";
 import { PBaseProps } from "@/types";
-import Json_input from "./components/json_input";
-import Json_output from "./components/json_output";
 import P_base from "./components/p_base";
 import MyDropzone from "./components/dropzone";
+import OfficalBase from "./components/officalBase";
 
 export default async function Home() {
   const testPBase: PBaseProps = {
@@ -23,14 +22,14 @@ export default async function Home() {
   return (
     <>
         <header>
-          <Json_input />
-          <Json_output />
+          <OfficalBase />
           <MyDropzone />
         </header>
         <main>
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
               <tr className="text-white">
+                <td></td>
                 <td>ポケモン</td>
                 <td>わざ1</td>
                 <td>わざ2</td>
@@ -45,7 +44,7 @@ export default async function Home() {
                 <td>Evs</td>
               </tr>
             </thead>
-            <tbody className="bg-blue-400">
+            <tbody>
               <P_base {...testPBase} />
             </tbody>
           </table>

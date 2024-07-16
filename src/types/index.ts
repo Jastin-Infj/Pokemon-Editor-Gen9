@@ -11,3 +11,8 @@ export interface PBaseProps {
   teratype: string;
   level?: number;
 };
+
+export interface StyleProps {
+  common?: string;
+  color?: string;
+}

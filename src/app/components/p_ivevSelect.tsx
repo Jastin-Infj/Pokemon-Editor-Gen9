@@ -1,8 +1,9 @@
-import React from 'react'
+import React from 'react';
+import { StyleProps } from '@/types';
 
-const P_ivevSelect = () => {
+const P_ivevSelect: React.FC<StyleProps> = ({color}) => {
   return (
-    <select className="bg-blue-400">
+    <select className={color}>
       <option value="ALL">All</option>
       <option value="HABCD">HABCD</option>
     </select>
