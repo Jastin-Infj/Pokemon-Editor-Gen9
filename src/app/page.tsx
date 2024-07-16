@@ -2,6 +2,7 @@
 import { PBaseProps } from "@/types";
 import P_base from "./components/p_base";
 import MyDropzone from "./components/dropzone";
+import OfficalBase from "./components/officalBase";
 
 export default async function Home() {
   const testPBase: PBaseProps = {
@@ -21,6 +22,7 @@ export default async function Home() {
   return (
     <>
         <header>
+          <OfficalBase />
           <MyDropzone />
         </header>
         <main>
