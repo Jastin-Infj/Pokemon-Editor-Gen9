@@ -1,15 +1,21 @@
 "use client";
 import React from "react";
 
+
+
 const OfficalBase = () => {
+
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   // ボタンを押下したら、ポケモンの公式種族値データを取得
   const handleClick = async () => {
     console.log("ポケモンの公式種族値データを取得");
     // Base URL
     const URL = "https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_National_Pok%C3%A9dex_number";
+
     // URLからデータ取得
     const res = await fetch(URL);
+
     if(res.status === 200) {
       // HTML要素として取得
       const text = await res.text();
@@ -39,13 +45,16 @@ const OfficalBase = () => {
 
         });
 
-
         // `forEach` の代わりに `map` を使用し、Promiseの配列を作成
         /// 関数を定義することで await を使用できる
         const fetchPromises = tds.map(async (td) => {
           if (!td.number) return null; // リージョンのデータは一度除外
-        
+
           const url = `https://bulbapedia.bulbagarden.net${td.url}`;
+
+          // 1秒待機
+          await delay(1000); 
+
           const fetchRes = await fetch(url);
           if(fetchRes.status === 200) {
             const htmlText = await fetchRes.text();
@@ -54,9 +63,14 @@ const OfficalBase = () => {
 
             //TODO 次回ここから再開
 
-            // 必要なHTML要素をここで選択し、返します。
-            // 例: doc.querySelector('セレクター')
-
+            // div要素を取得
+            const targets = doc.querySelectorAll("div.mw-parser-output > table.roundy");
+            
+            const target = Array.from(targets).find(target => {
+              const td = target.querySelectorAll("tbody > tr > td > table.roundy");
+              console.log(td);
+            });
+          
             return doc; // ここでは例としてdoc自体を返していますが、実際には必要な要素を返すべきです。
           }
           return null;
