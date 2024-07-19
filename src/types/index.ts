@@ -16,3 +16,12 @@ export interface StyleProps {
   common?: string;
   color?: string;
 }
+
+export interface BaseStatus {
+  hp: string | null;
+  attack: string | null;
+  defense: string | null;
+  spattack: string | null;
+  spdefense: string | null;
+  speed: string | null;
+}

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-
-
+import * as cheerio from "cheerio";
+import { BaseStatus } from "@/types";
 
 const OfficalBase = () => {
 
@@ -58,19 +58,108 @@ const OfficalBase = () => {
           const fetchRes = await fetch(url);
           if(fetchRes.status === 200) {
             const htmlText = await fetchRes.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, "text/html");
+            const $ = cheerio.load(htmlText);
+
+            const COMMON_SELECTOR_1 = "div#mw-content-text > div.mw-parser-output > table.roundy > tbody";
+            
+            // PokemonName
+            const engName = $(`${COMMON_SELECTOR_1} > tr:nth-child(1) > td > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td:nth-child(1) > big > big > b`).text();
+            const janName = $(`${COMMON_SELECTOR_1} > tr:nth-child(1) > td > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td:nth-child(2) > span > b`).text();
+
+            // types
+            const type_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(1) > table > tbody > tr > td:nth-child(1) > a > span > b`).text();
+            const type_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(1) > table > tbody > tr > td:nth-child(2) > a > span > b`).text();
+
+            // abilities
+            const abilites_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(1) > span`).text();
+            const abilites_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(2) > span`).text();
+            const abilites_3 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(4) > a > span`).text();
+
+            // baseStatus text
 
             //TODO 次回ここから再開
+            const baseStatusText = $("span#Base_stats").closest("h4");
+            const table = baseStatusText.next("table");
 
-            // div要素を取得
-            const targets = doc.querySelectorAll("div.mw-parser-output > table.roundy");
-            
-            const target = Array.from(targets).find(target => {
-              const td = target.querySelectorAll("tbody > tr > td > table.roundy");
-              console.log(td);
-            });
-          
+            console.log(table);
+
+            const COMMON_SELECTOR_2 = "#mw-content-text > div.mw-parser-output";
+
+            const baseStatus:BaseStatus  = {
+              hp: null,
+              attack: null,
+              defense: null,
+              spattack: null,
+              spdefense: null,
+              speed: null
+            };
+
+            // Pattean 1
+            const TableID_1 = 40;
+            // Pattean 2
+            const TableID_2 = 32;
+            // Pattean 3
+            const TableID_3 = 30;
+
+            let pattenFlag = false;
+
+            // Initial ID
+            let currentId = TableID_1;
+
+            // base status patten 1
+            for(let i = 3; i < (6 + 3);++i) {
+              if(!pattenFlag) currentId = TableID_1;
+              
+              switch(i) {
+                case 3:
+                  baseStatus.hp = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
+                  
+                  // troble none
+                  if(baseStatus.hp !== "") {
+                    console.log(baseStatus.hp);
+                    pattenFlag = true;
+                    break;
+                  }
+                  
+                  // Pattean 2
+                  currentId = TableID_2;
+                  baseStatus.hp = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
+                  if(baseStatus.hp !== "") {
+                    console.log(baseStatus.hp);
+                    pattenFlag = true;
+                    break;
+                  }
+
+                  // Pattean 3
+                  currentId = TableID_3;
+                  baseStatus.hp = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
+                  if(baseStatus.hp !== "") {
+                    console.log(baseStatus.hp);
+                    pattenFlag = true;
+                    break;
+                  }
+
+                  break;
+                case 4:
+                  baseStatus.attack = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  break;
+                case 5:
+                  baseStatus.defense = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  break;
+                case 6:
+                  baseStatus.spattack = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  break;
+                case 7:
+                  baseStatus.spdefense = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  break;
+                case 8:
+                  baseStatus.speed = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  break;
+              }
+            }
+
+            console.log([janName , baseStatus]);
+
             return doc; // ここでは例としてdoc自体を返していますが、実際には必要な要素を返すべきです。
           }
           return null;
