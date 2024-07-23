@@ -66,9 +66,70 @@ const OfficalBase = () => {
             const engName = $(`${COMMON_SELECTOR_1} > tr:nth-child(1) > td > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td:nth-child(1) > big > big > b`).text();
             const janName = $(`${COMMON_SELECTOR_1} > tr:nth-child(1) > td > table > tbody > tr:nth-child(1) > td > table > tbody > tr > td:nth-child(2) > span > b`).text();
 
+            // Init TableID
+            let table_ID = 2;
+            if(td.number === "0151") table_ID = 3;
+
+            // forms の数を取得する
+            const forms= $(`#mw-content-text > div.mw-parser-output > table:nth-child(${table_ID}) > tbody > tr:nth-child(2) > td:nth-child(1) > table > tbody > tr > td`).filter((_ , el): boolean =>  {
+              const $el = $(el);
+              // 非表示の要素を除外
+              const display = $el.css('display');
+              const visibility = $el.css('visibility');
+              const opacity = $el.css('opacity');
+
+              return display !== 'none' && visibility !== 'hidden' && opacity !== '0';
+            });
+            
+            // forms の数を取得数値に変換
+            let formIndex = forms.length;
+            switch(td.number) {
+              case "0012":
+              case "0015":
+              case "0018":
+              case "0065":
+              case "0068":
+              case "0080":
+              case "0094":
+              case "0099":
+              case "0115":
+              case "0130":
+              case "0131":
+              case "0142":
+                formIndex = 2;
+                break;
+              case "0003":
+              case "0009":
+                formIndex = 3;
+                break;
+              case "0006":
+                formIndex = 4;
+                break
+              case "0025":
+                formIndex = 17;
+                break;
+              case "0052": // ニャース
+                formIndex = 4;
+                break;
+              case "0133": // イーブイ
+                formIndex = 2;
+                break;
+            }
+
+            //TODO フォームの数を取得範囲場所で毎回取得する必要あり
+            //TODO 次回ここから再開
+            const types = [];
             // types
-            const type_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(1) > table > tbody > tr > td:nth-child(1) > a > span > b`).text();
-            const type_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(1) > table > tbody > tr > td:nth-child(2) > a > span > b`).text();
+            for(let i = 1; i <= forms.length;++i) {
+              const types_set = [];
+              const type_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(${i}) > table > tbody > tr > td:nth-child(1) > a > span > b`).text();
+              const type_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(${i}) > table > tbody > tr > td:nth-child(2) > a > span > b`).text();
+
+              types_set.push(type_1);
+              types_set.push(type_2);
+
+              types.push(types_set);
+            }
 
             // abilities
             const abilites_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(1) > span`).text();
@@ -77,13 +138,10 @@ const OfficalBase = () => {
 
             // baseStatus text
 
-            //TODO 次回ここから再開
             const baseStatusText = $("span#Base_stats").closest("h4");
-            const table = baseStatusText.next("table");
+            const table = baseStatusText.nextAll("table").first();
 
-            console.log(table);
-
-            const COMMON_SELECTOR_2 = "#mw-content-text > div.mw-parser-output";
+            // table から取得
 
             const baseStatus:BaseStatus  = {
               hp: null,
@@ -94,71 +152,33 @@ const OfficalBase = () => {
               speed: null
             };
 
-            // Pattean 1
-            const TableID_1 = 40;
-            // Pattean 2
-            const TableID_2 = 32;
-            // Pattean 3
-            const TableID_3 = 30;
-
-            let pattenFlag = false;
-
-            // Initial ID
-            let currentId = TableID_1;
 
             // base status patten 1
             for(let i = 3; i < (6 + 3);++i) {
-              if(!pattenFlag) currentId = TableID_1;
               
               switch(i) {
                 case 3:
-                  baseStatus.hp = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
-                  
-                  // troble none
-                  if(baseStatus.hp !== "") {
-                    console.log(baseStatus.hp);
-                    pattenFlag = true;
-                    break;
-                  }
-                  
-                  // Pattean 2
-                  currentId = TableID_2;
-                  baseStatus.hp = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
-                  if(baseStatus.hp !== "") {
-                    console.log(baseStatus.hp);
-                    pattenFlag = true;
-                    break;
-                  }
-
-                  // Pattean 3
-                  currentId = TableID_3;
-                  baseStatus.hp = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
-                  if(baseStatus.hp !== "") {
-                    console.log(baseStatus.hp);
-                    pattenFlag = true;
-                    break;
-                  }
-
+                  baseStatus.hp = $(table).find(`tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
                   break;
                 case 4:
-                  baseStatus.attack = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  baseStatus.attack = $(table).find(`tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
                   break;
                 case 5:
-                  baseStatus.defense = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  baseStatus.defense = $(table).find(`tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
                   break;
                 case 6:
-                  baseStatus.spattack = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  baseStatus.spattack = $(table).find(`tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
                   break;
                 case 7:
-                  baseStatus.spdefense = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  baseStatus.spdefense = $(table).find(`tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
                   break;
                 case 8:
-                  baseStatus.speed = $(`${COMMON_SELECTOR_2} > table:nth-child(${currentId}) > tbody > tr:nth-child(${i})> th > div:nth-child(2)`).text();
+                  baseStatus.speed = $(table).find(`tbody > tr:nth-child(${i}) > th > div:nth-child(2)`).text();
                   break;
               }
             }
 
-            console.log([janName , baseStatus]);
+            console.log([janName , formIndex , types]);
 
             return doc; // ここでは例としてdoc自体を返していますが、実際には必要な要素を返すべきです。
           }
@@ -169,7 +189,7 @@ const OfficalBase = () => {
         await Promise.all(fetchPromises)
         .then((results) => {
           // すべてのプロミスが解決した後に実行される処理
-          console.log('All fetches are done', results);
+          console.log('All fetches are done');
         })
         .catch((error) => {
           // いずれかのプロミスが拒否された場合に実行される処理
