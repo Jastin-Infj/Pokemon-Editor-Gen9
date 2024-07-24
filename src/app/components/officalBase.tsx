@@ -84,53 +84,101 @@ const OfficalBase = () => {
             // forms の数を取得数値に変換
             let formIndex = forms.length;
             switch(td.number) {
-              case "0012":
-              case "0015":
-              case "0018":
-              case "0065":
-              case "0068":
-              case "0080":
-              case "0094":
-              case "0099":
-              case "0115":
-              case "0130":
-              case "0131":
-              case "0142":
+              case "0012": // バタフリー
+              case "0015": // スピアー
+              case "0018": // ピジョット
+              case "0065": // フーディン
+              case "0068": // カイリキー
+              case "0080": // ヤドラン
+              case "0094": // ゲンガー
+              case "0099": // キングラー
+              case "0115": // ガルーラ
+              case "0130": // ギャラドス
+              case "0131": // ラプラス
+              case "0142": // プテラ
                 formIndex = 2;
                 break;
-              case "0003":
-              case "0009":
+              case "0003": // フシギバナ
+              case "0009": // カメックス
                 formIndex = 3;
                 break;
-              case "0006":
-                formIndex = 4;
-                break
-              case "0025":
-                formIndex = 17;
-                break;
+              case "0006": // リザードン
               case "0052": // ニャース
                 formIndex = 4;
+                break
+              case "0025": // ピカチュウ
+                formIndex = 17;
                 break;
               case "0133": // イーブイ
                 formIndex = 2;
                 break;
             }
 
-            //TODO フォームの数を取得範囲場所で毎回取得する必要あり
-            //TODO 次回ここから再開
             const types = [];
-            // types
-            for(let i = 1; i <= forms.length;++i) {
-              const types_set = [];
-              const type_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(${i}) > table > tbody > tr > td:nth-child(1) > a > span > b`).text();
-              const type_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(${i}) > table > tbody > tr > td:nth-child(2) > a > span > b`).text();
 
-              types_set.push(type_1);
-              types_set.push(type_2);
-
-              types.push(types_set);
+            let typesLen = null;
+            switch(td.number) {
+              default:
+                // types 枠の取得
+                typesLen = $(`div#mw-content-text > div.mw-parser-output > table:nth-child(${table_ID}) > tbody > tr:nth-child(2) > td:nth-child(1) > table > tbody > tr > td`).filter((_ , el): boolean =>  {
+                const $el = $(el);
+                // 非表示の要素を除外
+                const display = $el.css('display');
+                const visibility = $el.css('visibility');
+                const opacity = $el.css('opacity');
+  
+                return display !== 'none' && visibility !== 'hidden' && opacity !== '0';
+                });
+  
+                typesLen = typesLen.length;
+                break;
+              case "0128":
+                typesLen = 4;
+                break;
             }
 
+            switch(td.number) {
+              default:
+                // types
+                for(let i = 1; i <= typesLen;++i) {
+                  const types_set = [];
+
+                  const type_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(${table_ID}) > td > table > tbody > tr > td:nth-child(${i}) > table > tbody > tr > td:nth-child(1) > a > span > b`).text();
+                  const type_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(${table_ID}) > td > table > tbody > tr > td:nth-child(${i}) > table > tbody > tr > td:nth-child(2) > a > span > b`).text();
+
+                  types_set.push(type_1);
+                  types_set.push(type_2);
+
+                  types.push(types_set);
+                }
+
+                // 違うフォームでタイプが同じ場合、同じタイプを追加
+                let diff = formIndex - types.length;
+                for(let i = 0; i < diff;++i) {
+                  types.push(types[0]);
+                }
+
+                break;
+              case "0128": // ケンタロス
+                for(let y = 1; y <= 2; ++y) {                  
+                  for(let x = 1; x <= 2; ++x) {
+                    const types_set = [];
+
+                    const type_1 = $(`div#mw-content-text > div.mw-parser-output > table:nth-child(${table_ID}) > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(${y}) > td:nth-child(${x}) > table > tbody > tr > td:nth-child(1) > a > span > b`).text();
+                    const type_2 = $(`div#mw-content-text > div.mw-parser-output > table:nth-child(${table_ID}) > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(${y}) > td:nth-child(${x}) > table > tbody > tr > td:nth-child(2) > a > span > b`).text();
+
+                    types_set.push(type_1);
+                    types_set.push(type_2);
+  
+                    types.push(types_set);
+                  }
+                }
+                break;
+            }
+
+            //TODO フォームの数を取得範囲場所で毎回取得する必要あり
+            //TODO 次回ここから再開
+            
             // abilities
             const abilites_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(1) > span`).text();
             const abilites_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(2) > span`).text();
@@ -178,7 +226,7 @@ const OfficalBase = () => {
               }
             }
 
-            console.log([janName , formIndex , types]);
+            console.log([janName , types , formIndex]);
 
             return doc; // ここでは例としてdoc自体を返していますが、実際には必要な要素を返すべきです。
           }
