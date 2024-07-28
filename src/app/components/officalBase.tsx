@@ -3,6 +3,9 @@ import React from "react";
 import * as cheerio from "cheerio";
 import { BaseStatus } from "@/types";
 
+
+//TODO 不要な理由 Excelでフォーマット作ってほうが早い
+
 const OfficalBase = () => {
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -176,13 +179,34 @@ const OfficalBase = () => {
                 break;
             }
 
-            //TODO フォームの数を取得範囲場所で毎回取得する必要あり
-            //TODO 次回ここから再開
+            let abilities:string[] = [];
+
+            switch(td.number) {
+              default:
+                let ability_elements = $(`#mw-content-text > div.mw-parser-output > table:nth-child(2) > tbody > tr:nth-child(3) > td > table > tbody > tr > td`).filter((_ , el): boolean =>  {
+                  const $el = $(el);
+                  // 非表示の要素を除外
+                  const display = $el.css('display');
+                  const visibility = $el.css('visibility');
+                  const opacity = $el.css('opacity');
+    
+                  return display !== 'none' && visibility !== 'hidden' && opacity !== '0';
+                });
+
+                let test = $(ability_elements).find(`a > span`);
+                test.each((i , el) => {
+                  abilities.push($(el).text());
+                });
+
+                console.log(abilities);
+
+                break;
+            }
             
             // abilities
-            const abilites_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(1) > span`).text();
-            const abilites_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(2) > span`).text();
-            const abilites_3 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(4) > a > span`).text();
+            // const abilites_1 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(1) > span`).text();
+            // const abilites_2 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(1) > a:nth-child(2) > span`).text();
+            // const abilites_3 = $(`${COMMON_SELECTOR_1} > tr:nth-child(3) > td > table > tbody > tr > td:nth-child(4) > a > span`).text();
 
             // baseStatus text
 
