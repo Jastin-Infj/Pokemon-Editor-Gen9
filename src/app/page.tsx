@@ -22,7 +22,6 @@ export default async function Home() {
   return (
     <>
         <header>
-          <OfficalBase />
           <MyDropzone />
         </header>
         <main>
