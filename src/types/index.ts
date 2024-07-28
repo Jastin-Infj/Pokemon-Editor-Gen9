@@ -18,10 +18,39 @@ export interface StyleProps {
 }
 
 export interface BaseStatus {
-  hp: string | null;
-  attack: string | null;
-  defense: string | null;
-  spattack: string | null;
-  spdefense: string | null;
-  speed: string | null;
+  hp: string | number |  null;
+  attack: string | number |  null;
+  defense: string | number |  null;
+  spattack: string | number |  null;
+  spdefense: string | number |  null;
+  speed: string | number |  null;
+}
+
+export interface PokemonAPIObject {
+  name: string,
+  url: string
+};
+
+export interface VersionGroupObject {
+  level_learned_at: number,
+  move_learn_method: object,
+  version_group: object
+};
+
+export interface PokemonMoveObject {
+  move: PokemonAPIObject,
+  version_group_details: VersionGroupObject[]
+};
+
+export interface PokemonDataBase {
+  id: number | null,
+  nameJa: string | null,
+  nameEn: string | null,
+  type1: string | null,
+  type2: string | null,
+  ability1: string | null,
+  ability2: string | null,
+  abilityH: string | null,
+  basestatus: BaseStatus,
+  moves: PokemonMoveObject[],
 }

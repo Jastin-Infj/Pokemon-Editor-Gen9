@@ -3,6 +3,7 @@ import { PBaseProps } from "@/types";
 import P_base from "./components/p_base";
 import MyDropzone from "./components/dropzone";
 import OfficalBase from "./components/officalBase";
+import Pokeapi from "./components/Pokeapi";
 
 export default async function Home() {
   const testPBase: PBaseProps = {
@@ -22,6 +23,7 @@ export default async function Home() {
   return (
     <>
         <header>
+          <Pokeapi />
           <MyDropzone />
         </header>
         <main>
