@@ -3,9 +3,6 @@ import React from "react";
 import * as cheerio from "cheerio";
 import { BaseStatus } from "@/types";
 
-
-//TODO 不要な理由 Excelでフォーマット作ってほうが早い
-
 const OfficalBase = () => {
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

@@ -110,14 +110,32 @@ const Pokeapi = () => {
     const api = new PokemonClient(); // create a PokemonClient
     let allPokemon: PokemonAPIObject[] = [];
     let offset = 0;
-    const limit = 100;
+    const LIMIT = 100;
 
     // 100件ずつ取得する
     while (true) {
-      const pokemonList = await api.listPokemons(offset, limit);
+      const pokemonList = await api.listPokemons(offset, LIMIT);
       allPokemon = allPokemon.concat(pokemonList.results);
-      offset += limit;
-      if (pokemonList.results.length < limit) {
+      offset += LIMIT;
+      if (pokemonList.results.length < LIMIT) {
+        break;
+      }
+    }
+  };
+
+  const handleTypes = async () => {
+    const api = new PokemonClient(); // create a PokemonClient
+    let allTypes: PokemonAPIObject[] = [];
+    let offset = 0;
+    const LIMIT = 25;
+
+    // 25件ずつ取得する
+    while (true) {
+      const typeList = await api.listTypes(offset, LIMIT);
+      allTypes = allTypes.concat(typeList.results);
+      offset += LIMIT;
+      if (typeList.results.length < LIMIT) {
+        console.log(allTypes);
         break;
       }
     }
@@ -127,14 +145,14 @@ const Pokeapi = () => {
     const api = new MoveClient(); // create a PokemonClient
     let allMoves: PokemonAPIObject[] = [];
     let offset = 0;
-    const limit = 100;
+    const LIMIT = 100;
 
     // 100件ずつ取得する
     while (true) {
-      const moveList = await api.listMoves(offset, limit);
+      const moveList = await api.listMoves(offset, LIMIT);
       allMoves = allMoves.concat(moveList.results);
-      offset += limit;
-      if (moveList.results.length < limit) {
+      offset += LIMIT;
+      if (moveList.results.length < LIMIT) {
         break;
       }
     }
@@ -144,26 +162,81 @@ const Pokeapi = () => {
     const api = new PokemonClient();
     let allAbility:PokemonAPIObject[] = [];
     let offset = 0;
-    const limit = 100;
+    const LIMIT = 100;
 
     // 100件ずつ取得する
     while (true) {
-      const abilityList = await api.listAbilities(offset, limit);
+      const abilityList = await api.listAbilities(offset, LIMIT);
       allAbility = allAbility.concat(abilityList.results);
-      offset += limit;
-      if (abilityList.results.length < limit) {
+      offset += LIMIT;
+      if (abilityList.results.length < LIMIT) {
         console.log(allAbility);
         break;
       }
     }
   }
 
+  const handleItem = async () => {
+    const api = new PokemonClient();
+    let allItem:PokemonAPIObject[] = [];
+    let offset = 0;
+    const LIMIT = 20;
+
+    // 20件ずつ取得する
+    while (true) {
+      let url = `https://pokeapi.co/api/v2/item/?offset=${offset}&limit=${LIMIT}`;
+      const itemList = await fetch(url);
+      const datas = await itemList.json();
+
+      allItem = allItem.concat(datas.results);
+      offset += LIMIT;
+      if (datas.results.length < LIMIT) {
+        console.log(allItem);
+        break;
+      } else {
+        console.log(offset);
+      }
+    }
+  };
+
+  // 25件ですべて
+  const handleNature = async () => {
+    const api = new PokemonClient();
+    let allNature:PokemonAPIObject[] = [];
+    let offset = 0;
+    const LIMIT = 25;
+
+    // 25件ずつ取得する
+    while (true) {
+      let url = `https://pokeapi.co/api/v2/nature/?offset=${offset}&limit=${LIMIT}`;
+      const natureList = await fetch(url);
+      const datas = await natureList.json();
+
+      allNature = allNature.concat(datas.results);
+      offset += LIMIT;
+      if (datas.results.length < LIMIT) {
+        console.log(allNature);
+        break;
+      } else {
+        console.log(offset);
+      }
+    }
+  }
+
+  const handlePokemonDataBaseInit = () => {
+    console.log("データベース初期化");
+  }
+
   return (
     <div className="flex">
       <button className='mx-3' onClick={handleClickPokemonSelect}>ポケモン名から取得</button>
       <button className='mx-3' onClick={handlePokemon}>ポケモンすべて取得</button>
+      <button className='mx-3' onClick={handleTypes}>タイプすべて取得</button>
       <button className='mx-3' onClick={handleMoves}>わざすべて取得</button>
       <button className='mx-3' onClick={handleAbility}>とくせいすべて取得</button>
+      <button className='mx-3' onClick={handleItem}>アイテムすべて取得</button>
+      <button className='mx-3' onClick={handleNature}>せいかくすべて取得</button>
+      <button className='mx-3' onClick={handlePokemonDataBaseInit}>データベース初期化</button>
     </div>
   )
 }
