@@ -225,6 +225,7 @@ const Pokeapi = () => {
 
   const handlePokemonDataBaseInit = () => {
     console.log("データベース初期化");
+
   }
 
   return (
