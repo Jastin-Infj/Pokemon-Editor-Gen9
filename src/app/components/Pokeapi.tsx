@@ -228,7 +228,7 @@ const Pokeapi = () => {
     const prisma = new PrismaClient();
     
     // データベース読み取り
-    const pokemonData = prisma.pokemon.findMany();
+    const pokemonData = prisma.dexINFO.findMany();
     console.log(pokemonData);
   }
 
