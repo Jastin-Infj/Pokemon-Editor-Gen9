@@ -2,6 +2,7 @@
 import React from 'react';
 import { PokemonClient  , MoveClient } from 'pokenode-ts';
 import { PokemonAPIObject, PokemonDataBase } from '@/types';
+import { PrismaClient } from '@prisma/client';
 
 /// データベースをPokeAPI から取得する
 
@@ -224,8 +225,11 @@ const Pokeapi = () => {
   }
 
   const handlePokemonDataBaseInit = () => {
-    console.log("データベース初期化");
-
+    const prisma = new PrismaClient();
+    
+    // データベース読み取り
+    const pokemonData = prisma.pokemon.findMany();
+    console.log(pokemonData);
   }
 
   return (

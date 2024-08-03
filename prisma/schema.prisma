@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model DexINFO {
+  nationalDexAPI Int    @id @default(autoincrement())
+  nationalDex    Int?
+  nameJA         String
+  nameEN         String
+  BaseInfo       BaseInfo[]
+}
+
+model TypeINFO {
+  typeID   Int    @id @default(autoincrement())
+  typeName String @unique
+  BaseInfo BaseInfo[] @relation("Type1")
+  BaseInfo2 BaseInfo[] @relation("Type2")
+}
+
+model AbilityINFO {
+  abilityID   Int    @id @default(autoincrement())
+  abilityName String @unique
+  BaseInfo1   BaseInfo[] @relation("Ability1")
+  BaseInfo2   BaseInfo[] @relation("Ability2")
+  BaseInfo3   BaseInfo[] @relation("Ability3")
+}
+
+model MoveINFO {
+  moveID   Int    @id @default(autoincrement())
+  moveName String @unique
+}
+
+model BaseInfo {
+  // 一意的なIDがprismaは必要
+  id      Int     @id @default(autoincrement())
+  nationalDexAPI Int
+  type1_ID       Int
+  type2_ID       Int?
+  ability1       Int
+  ability2       Int
+  ability3       Int
+  moveList       Json
+  baseHP         Int
+  baseAttack     Int
+  baseDefense    Int
+  baseSpAtk      Int
+  baseSpDef      Int
+  baseSpeed      Int
+
+  DexINFO   DexINFO   @relation(fields: [nationalDexAPI], references: [nationalDexAPI])
+  TypeINFO  TypeINFO  @relation("Type1", fields: [type1_ID], references: [typeID])
+  TypeINFO2 TypeINFO? @relation("Type2", fields: [type2_ID], references: [typeID])
+  Ability1  AbilityINFO @relation("Ability1", fields: [ability1], references: [abilityID])
+  Ability2  AbilityINFO @relation("Ability2", fields: [ability2], references: [abilityID])
+  Ability3  AbilityINFO @relation("Ability3", fields: [ability3], references: [abilityID])
+
+  @@index([nationalDexAPI])
+  @@index([type1_ID])
+  @@index([type2_ID])
+  @@index([ability1])
+  @@index([ability2])
+  @@index([ability3])
+}
