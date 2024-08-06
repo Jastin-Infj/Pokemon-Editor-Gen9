@@ -3,6 +3,13 @@ import prisma from "@/lib/prisma";
 import { PokemonClient  , MoveClient } from 'pokenode-ts';
 import { PokemonAPIObject, PokemonDataBase } from '@/types';
 
+import fs from 'fs';
+import JSON_POKEMON_DEX from "../../json/pokemonDex.json";
+import JSON_POKEMON_INFO from "../../json/pokemonInfo.json";
+
+const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
+const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
+
 export const Access = () => {
   const dataFormat: PokemonDataBase = {
     id: null,
@@ -25,6 +32,11 @@ export const Access = () => {
   };
 
   const handlePokemon = async (): Promise<PokemonAPIObject[]> => {
+
+    if(JSON_POKEMON_DEX !== undefined) {
+      return Promise.resolve(JSON_POKEMON_DEX);
+    }
+
     const api = new PokemonClient(); // create a PokemonClient
     let allPokemon: PokemonAPIObject[] = [];
     let offset = 0;
@@ -36,6 +48,7 @@ export const Access = () => {
       allPokemon = allPokemon.concat(pokemonList.results);
       offset += LIMIT;
       if (pokemonList.results.length < LIMIT) {
+        fs.writeFileSync(JSON_POKEMON_DEX_PATH, JSON.stringify(allPokemon, null, 2));
         return allPokemon;
       }
     }
@@ -147,7 +160,9 @@ export const Access = () => {
   const InsertDexInfo = async () => {
     const api = new PokemonClient();
 
-    let DexInfo  = handlePokemon();
+    let DexInfo  = await handlePokemon();
+    console.log("DexInfo Fin");
+    console.log(DexInfo);
 
     // let TypeInfo = handleTypes();
     // let MoveInfo = handleMoves();
@@ -156,64 +171,86 @@ export const Access = () => {
     // let NatureInfo = handleNature();
 
     // 全ての処理が終わるまで待つ
-    Promise.all([DexInfo]).then((results) => {
-      console.log("全ての処理が終わりました");
-      // DexInfo のURLを参照する
-      let dex = results[0];
-
-      // それぞれの情報を取得する
-      let Param_Name_JA = "";
-      let Param_Name_EN = "";
+    // Promise.all([DexInfo]).then((results) => {
       
-      // すべての非同期処理を待機
-      let Pokemoninfo = Promise.all(dex.map(async (data) => {
-        const res = await fetch(data.url);
-        const json = await res.json();
-        return Promise.resolve(json);
-      }));
+    //   // DexInfo のURLを参照する
+    //   let dex = results[0];
+
+    //   // それぞれの情報を取得する
+    //   let Param_Name_JA = "";
+    //   let Param_Name_EN = "";
+
+    //   let Pokemoninfo;
+    //   // すべての非同期処理を待機
+    //   if(JSON_POKEMON_INFO !== undefined) {
+    //     Pokemoninfo = Promise.resolve(JSON_POKEMON_INFO);
+    //   } else {
+    //     Pokemoninfo = Promise.all(dex.map(async (data) => {
+    //       const res = await fetch(data.url);
+    //       const json = await res.json();
+    //       return Promise.resolve(json);
+    //     }));
+    //   }
       
-      // 日本語の名前を取得
-      return Pokemoninfo.then((datas) => {
-        console.log("Pokemoninfo Fin");
-        // 情報源を取得
-        let SpecInfo = Promise.all(datas.map(async (data) => {
-          console.log("Check : " + data.id);
+    //   // 日本語の名前を取得
+    //   return Pokemoninfo.then((datas:any) => {
+    //     console.log("Pokemoninfo Fin");
+    //     console.log(typeof datas);
 
-          const url = `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`;
-          const res = await fetch(url);
-          // 404エラーが出た場合はnullを返す
-          if(res.status === 404) return {id: data.id , names: null , nameEn: data.name};
+    //     if(JSON_POKEMON_INFO === undefined) {
+    //       fs.writeFileSync(JSON_POKEMON_INFO_PATH, JSON.stringify(datas, null, 2));
+    //     }
 
-          const json:any = await res.json();
-          return Promise.resolve(json);
-        })).then((res) => {
-          res.map(async (data) => {
+    //     // 情報源を取得
+    //     let SpecInfo = Promise.all(datas.map(async (data:any) => {
+    //       console.log("Check : " + data.id);
 
-            if(data.names === null) {
-              console.log([data.id, "" , data.nameEn]);
-              return null;
-            }
+    //       const url = `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`;
+    //       const res = await fetch(url);
+    //       // 404エラーが出た場合はnullを返す
+    //       if(res.status === 404) return { id: data.id , names: null};
 
-            // 日本語名と英語名を取得
-            data.names.map(async (nameParam:any) => {
-              switch (nameParam.language.name) {
-                case "ja":
-                  Param_Name_JA = nameParam.name;
-                  break;
-                case "en":
-                  Param_Name_EN = nameParam.name;
-                  break;
-              }
-            });
+    //       const json:any = await res.json();
+    //       return Promise.resolve(json);
+    //     })).then((res) => {
+          
+    //       let test = res.map(async (data) => {
 
-            console.log([data.id , Param_Name_JA , Param_Name_EN]);
+    //         if(data.names === null) {
+    //           //console.log([data.id, "" , data.nameEn]);
+    //           return Promise.resolve(data);
+    //         }
 
-          });
-          return Promise.resolve();
-        });
-      });
+    //         // 日本語名と英語名を取得
+    //         data.names.map(async (nameParam:any) => {
+    //           switch (nameParam.language.name) {
+    //             case "ja":
+    //               Param_Name_JA = nameParam.name;
+    //               break;
+    //             case "en":
+    //               Param_Name_EN = nameParam.name;
+    //               break;
+    //           }
+    //         });
 
-    });
+    //         //console.log([data.id , Param_Name_JA , Param_Name_EN]);
+
+    //         const json = {
+    //           id: data.id,
+    //           nameJa: Param_Name_JA,
+    //           nameEn: Param_Name_EN,
+    //         };
+    //         return Promise.resolve(json);
+    //       });
+
+    //       Promise.all([test]).then((res) => {
+    //         // console.log(res);
+    //       });
+
+    //     });
+    //   });
+
+    // });
   }
 
   InsertDexInfo();
