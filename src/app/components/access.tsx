@@ -2,7 +2,6 @@
 import prisma from "@/lib/prisma";
 import { PokemonClient  , MoveClient } from 'pokenode-ts';
 import { PokemonAPIObject, PokemonDataBase } from '@/types';
-import { resolve } from "path";
 
 export const Access = () => {
   const dataFormat: PokemonDataBase = {
@@ -183,13 +182,17 @@ export const Access = () => {
           const url = `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`;
           const res = await fetch(url);
           // 404エラーが出た場合はnullを返す
-          if(res.status === 404) return null;
+          if(res.status === 404) return {id: data.id , names: null , nameEn: data.name};
 
           const json:any = await res.json();
           return Promise.resolve(json);
         })).then((res) => {
           res.map(async (data) => {
-            if(!data) return;
+
+            if(data.names === null) {
+              console.log([data.id, "" , data.nameEn]);
+              return null;
+            }
 
             // 日本語名と英語名を取得
             data.names.map(async (nameParam:any) => {
