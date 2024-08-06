@@ -38,3 +38,6 @@ prisma/migrations/*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# json
+src/json/*.json
