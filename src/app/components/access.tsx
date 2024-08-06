@@ -4,11 +4,12 @@ import { PokemonClient  , MoveClient } from 'pokenode-ts';
 import { PokemonAPIObject, PokemonDataBase } from '@/types';
 
 import fs from 'fs';
-import JSON_POKEMON_DEX from "../../json/pokemonDex.json";
-import JSON_POKEMON_INFO from "../../json/pokemonInfo.json";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
+const JSON_POKEMON_SPEC_PATH = "./src/json/pokemonSpec.json";
+
+let DEBUG_FLAG = false;
 
 export const Access = () => {
   const dataFormat: PokemonDataBase = {
@@ -33,12 +34,17 @@ export const Access = () => {
 
   const handlePokemon = async (): Promise<PokemonAPIObject[]> => {
 
-    if(JSON_POKEMON_DEX !== undefined) {
-      return Promise.resolve(JSON_POKEMON_DEX);
+    let allPokemon: PokemonAPIObject[] = [];
+
+    // すでにファイルが存在する場合はそれを読み込む
+    if(fs.existsSync(JSON_POKEMON_DEX_PATH)){
+      const fileContent = fs.readFileSync(JSON_POKEMON_DEX_PATH , 'utf-8');
+      const json: PokemonAPIObject[] = JSON.parse(fileContent);
+      allPokemon = json;
+      return allPokemon;
     }
 
     const api = new PokemonClient(); // create a PokemonClient
-    let allPokemon: PokemonAPIObject[] = [];
     let offset = 0;
     const LIMIT = 100;
 
@@ -161,8 +167,66 @@ export const Access = () => {
     const api = new PokemonClient();
 
     let DexInfo  = await handlePokemon();
-    console.log("DexInfo Fin");
-    console.log(DexInfo);
+    console.log("--- DexInfo Fin ---");
+
+    // getParam: id 
+    let PokemonList:Object[] = [];
+    if(fs.existsSync(JSON_POKEMON_INFO_PATH)){
+      const fileContent = fs.readFileSync(JSON_POKEMON_INFO_PATH , 'utf-8');
+      const json: Object[] = JSON.parse(fileContent);
+      PokemonList = json;
+    } else {
+      PokemonList = await Promise.all(
+        DexInfo.map(async (data) => {
+          const res = await fetch(data.url);
+          return res.json();
+        })
+      );
+      fs.writeFileSync(JSON_POKEMON_INFO_PATH, JSON.stringify(PokemonList, null, 2));
+    }
+    console.log("--- PokemonList Fin ---");
+
+    let SpecInfo:Object[] = [];
+    // getParam: names.language.name , names.name
+    SpecInfo = await Promise.all(
+      PokemonList.map(async (data:any) => {
+        const url = `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`;
+
+        try {
+          const res = await fetch(url);
+          if(res.status === 404) {
+            throw new Error('404 Not Found');
+          }
+          return res.json();
+        } catch (error) {
+          // 404エラーが出た場合は 日本語名をAPIから取得不可
+          return { id: data.id , names: null , name: data.name};
+        }
+      })
+    );
+    console.log("--- SpecInfo ---");
+    
+    // 日本語の名前を取得
+    SpecInfo.forEach((data:any) => {
+      if(data.names === null) {
+        console.log([data.id, "" , data.name]);
+        return;
+      }
+
+      let Param_Name_JA = "";
+      let Param_Name_EN = "";
+      data.names.map((nameParam:any) => {
+        switch (nameParam.language.name) {
+          case "ja":
+            Param_Name_JA = nameParam.name;
+            break;
+          case "en":
+            Param_Name_EN = nameParam.name;
+            break;
+        }
+      });
+      console.log([data.id , Param_Name_JA , Param_Name_EN]);
+    });
 
     // let TypeInfo = handleTypes();
     // let MoveInfo = handleMoves();
