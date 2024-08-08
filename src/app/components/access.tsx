@@ -171,6 +171,8 @@ export const Access = () => {
 
     // getParam: id 
     let PokemonList:Object[] = [];
+
+    // すでにファイルが存在する場合はjson読み込む
     if(fs.existsSync(JSON_POKEMON_INFO_PATH)){
       const fileContent = fs.readFileSync(JSON_POKEMON_INFO_PATH , 'utf-8');
       const json: Object[] = JSON.parse(fileContent);
@@ -188,22 +190,31 @@ export const Access = () => {
 
     let SpecInfo:Object[] = [];
     // getParam: names.language.name , names.name
-    SpecInfo = await Promise.all(
-      PokemonList.map(async (data:any) => {
-        const url = `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`;
 
-        try {
-          const res = await fetch(url);
-          if(res.status === 404) {
-            throw new Error('404 Not Found');
+    if(fs.existsSync(JSON_POKEMON_SPEC_PATH)){
+      const fileContent = fs.readFileSync(JSON_POKEMON_SPEC_PATH , 'utf-8');
+      const json: Object[] = JSON.parse(fileContent);
+      SpecInfo = json;
+    } else {
+      SpecInfo = await Promise.all(
+        PokemonList.map(async (data:any) => {
+          const url = `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`;
+  
+          try {
+            const res = await fetch(url);
+            if(res.status === 404) {
+              throw new Error('404 Not Found');
+            }
+            return res.json();
+          } catch (error) {
+            // 404エラーが出た場合は 日本語名をAPIから取得不可
+            return { id: data.id , names: null , name: data.name};
           }
-          return res.json();
-        } catch (error) {
-          // 404エラーが出た場合は 日本語名をAPIから取得不可
-          return { id: data.id , names: null , name: data.name};
-        }
-      })
-    );
+        })
+      );
+      // 非同期処理完了後にファイルに書き込む
+      fs.writeFileSync(JSON_POKEMON_SPEC_PATH, JSON.stringify(SpecInfo, null, 2));
+    }
     console.log("--- SpecInfo ---");
     
     // 日本語の名前を取得
