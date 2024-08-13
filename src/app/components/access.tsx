@@ -1,10 +1,9 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { PokemonClient  , MoveClient } from 'pokenode-ts';
-import { PokemonAPIObject, PokemonDataBase } from '@/types';
+import { PokemonAPIObject, PokemonDataBase, PokemonDataBaseName } from '@/types';
 
 import fs from 'fs';
-import React from "react";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
@@ -165,17 +164,25 @@ export const Access = () => {
     }
   }
 
-  async function getPosts() {
-    const posts = await prisma.dexINFO.findMany();
-    return posts;
+  async function getPostsDB(name: PokemonDataBaseName) {
+    let res;
+
+    switch (name) {
+      case "DexInfo":
+        res = await prisma.dexINFO.findMany();
+        break;
+      case "TypeInfo":
+        res = await prisma.typeINFO.findMany();
+        break;
+    }
+    return res;
   }
 
-
   // 外部キー制約により順番を決める
-  const InsertDexInfo = async () => {
+  const FetchPokeAPI = async (): Promise<void> => {
     const api = new PokemonClient();
     
-    console.log("             ");
+    console.log(``);
     console.log("--- Start ---");
 
     // ポケモン図鑑情報を取得
@@ -237,28 +244,6 @@ export const Access = () => {
       allSpecInfo = SpecInfo;
     }
     console.log("--- SpecInfo Fin ---");
-    
-    // 日本語の名前を取得
-    allSpecInfo.forEach((data:any) => {
-      if(data.names === null) {
-        // console.log([data.id, "" , data.name]);
-        return;
-      }
-
-      let Param_Name_JA = "";
-      let Param_Name_EN = "";
-      data.names.map((nameParam:any) => {
-        switch (nameParam.language.name) {
-          case "ja":
-            Param_Name_JA = nameParam.name;
-            break;
-          case "en":
-            Param_Name_EN = nameParam.name;
-            break;
-        }
-      });
-      // console.log([data.id , Param_Name_JA , Param_Name_EN]);
-    });
 
     // タイプ情報を取得
     if(fs.existsSync(JSON_POKEMON_TYPE_PATH)) {
@@ -321,17 +306,94 @@ export const Access = () => {
     }
     console.log("--- NatureList Fin ---");
 
-    /// データベースに挿入
-    console.log("             ");
-    console.log("--- Data Insert Start ---");
-
+    
   }
 
-  InsertDexInfo();
-  // const posts = getPosts();
-  // posts.then((data) => {
-  //   console.log(data[1]);
-  // });
+  const InsertPokemonDexInfoDB = async ():Promise<void> => {
+    let res = await getPostsDB("DexInfo");
+    if(res && res?.length > 0) {
+      console.log("--- DexInfo Already Inserted ---");
+      return;
+    }
+
+    let insert_dex:any[] = [];
+    allSpecInfo.forEach((data:any) => {
+      let format = {};
+     
+      if(data.names === null) {
+        format = {
+          nationalDexAPI: data.id,
+          nationalDex: data.id,
+          nameJA: "",
+          nameEN: data.name
+        };
+      
+        insert_dex.push(format);
+        return;
+      }
+     
+      let Param_Name_JA = "";
+      let Param_Name_EN = "";
+      data.names.map((nameParam:any) => {
+        switch (nameParam.language.name) {
+          case "ja":
+            Param_Name_JA = nameParam.name;
+            break;
+          case "en":
+            Param_Name_EN = nameParam.name;
+            break;
+        }
+      });
+     
+      format = {
+        nationalDexAPI: data.id,
+        nationalDex: data.id,
+        nameJA: Param_Name_JA,
+        nameEN: Param_Name_EN
+      };
+     
+      insert_dex.push(format);
+    });
+     
+    // まとめて挿入
+    const results = await prisma.dexINFO.createMany({
+      data: insert_dex
+    });
+    await prisma.$disconnect();
+    console.log("--- DexInfo Inserted ---");
+  };
+
+  const InsertPokemonTypeInfoDB = async ():Promise<void> => {
+    let res = await getPostsDB("TypeInfo");
+    if(res && res?.length > 0) {
+      console.log("--- TypeInfo Already Inserted ---");
+      return;
+    }
+
+    let insert_type:any[] = [];
+    allTypesInfo.forEach((data:any) => {
+      // url からIDを取得(string -> number)
+      let format = {
+        typeID: parseInt(data.url.split("/")[6]),
+        typeName: data.name
+      };
+      insert_type.push(format);
+    });
+
+    const results = await prisma.typeINFO.createMany({
+      data: insert_type
+    });
+    await prisma.$disconnect();
+    console.log("--- TypeInfo Inserted ---");
+
+  };
+
+  let promise_fetchPokemonAPI = FetchPokeAPI();
+  Promise.all([promise_fetchPokemonAPI]).then(() => {
+    console.log(``);
+    InsertPokemonDexInfoDB();
+    InsertPokemonTypeInfoDB();
+  });
 
   return (
     <button>test</button>

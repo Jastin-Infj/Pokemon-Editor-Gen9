@@ -54,3 +54,5 @@ export interface PokemonDataBase {
   basestatus: BaseStatus,
   moves: PokemonMoveObject[],
 }
+
+export type PokemonDataBaseName = "DexInfo" | "TypeInfo" | null;
