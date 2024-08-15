@@ -14,11 +14,13 @@ datasource db {
 }
 
 model DexInfo {
-  nationalDexAPI Int    @id @default(autoincrement())
+  id             Int @id @default(autoincrement())
+  nationalDexAPI Int @unique
+  BaseInfo       BaseInfo?
+
   nationalDex    Int?
   nameJA         String
   nameEN         String
-  BaseInfo       BaseInfo[]
 }
 
 // 外部キーなし 1対多になりTypeInfoの役割が矛盾するため
@@ -49,29 +51,55 @@ model NatureInfo {
 
 model MoveLearnList {
   id           Int @id @default(autoincrement())
-  nationalDexAPI Int
+  movenationalDexAPI Int
   moveID        Int
   moveLevel     Int
   moveVersion   String
 
-  BaseInfo      BaseInfo @relation(fields: [nationalDexAPI], references: [nationalDexAPI])
+  // // baseNationalDexAPIで紐づける
+  // baseInfo      BaseInfo @relation(fields: [movenationalDexAPI], references: [basenationalDexAPI], onDelete: Cascade)
 }
 
 model BaseInfo {
-  // 一意的なIDがprismaは必要
-  nationalDexAPI Int @id @default(autoincrement())
-  type1          Int
-  type2          Int
-  ability1       Int
-  ability2       Int
-  ability3       Int
-  baseHP         Int
-  baseAttack     Int
-  baseDefense    Int
-  baseSpAtk      Int
-  baseSpDef      Int
-  baseSpeed      Int
+  id               Int      @id @default(autoincrement())
+  //! 外部キー制約すると Unknown argument Errorが出る
+  basenationalDexAPI Int    @unique
+  type1            Int
+  type2            Int?
+  ability1         Int
+  ability2         Int?
+  ability3         Int?
+  baseHP           Int
+  baseAttack       Int
+  baseDefense      Int
+  baseSpAttack     Int
+  baseSpDefense    Int
+  baseSpeed        Int
+  dexInfo          DexInfo? @relation(fields: [f_nationalDexAPI], references: [nationalDexAPI])
 
-  dexInfo     DexInfo      @relation(fields: [nationalDexAPI], references: [nationalDexAPI], onDelete: Cascade)
-  moveList    MoveLearnList[]
+  // データベースとして保存されるが createでは使わない(null が入る)
+  f_nationalDexAPI Int @unique // 検索用
 }
+
+// model BaseInfo {
+//   // 一意的なIDがprismaは必要
+//   id           Int @id @default(autoincrement())
+//   // One to Oneの関係
+//   dexInfo     DexInfo @relation(fields: [basenationalDexAPI], references: [nationalDexAPI])
+//   basenationalDexAPI Int @unique
+
+//   type1          Int
+//   type2          Int
+//   ability1       Int
+//   ability2       Int
+//   ability3       Int
+//   baseHP         Int
+//   baseAttack     Int
+//   baseDefense    Int
+//   baseSpAttack   Int
+//   baseSpDefense  Int
+//   baseSpeed      Int
+
+//   // // 多対多の関係
+//   // moves       MoveLearnList[]
+// }
