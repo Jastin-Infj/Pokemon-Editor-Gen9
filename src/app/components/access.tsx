@@ -17,26 +17,6 @@ const JSON_POKEMON_NATURE_PATH = "./src/json/pokemonNature.json";
 let DEBUG_FLAG = false;
 
 export const Access = () => {
-  const dataFormat: PokemonDataBase = {
-    id: null,
-    nameJa: null,
-    nameEn: null,
-    type1: null,
-    type2: null,
-    ability1: null,
-    ability2: null,
-    abilityH: null,
-    basestatus: {
-      hp: null,
-      attack: null,
-      defense: null,
-      spattack: null,
-      spdefense: null,
-      speed: null
-    },
-    moves: []
-  };
-
   let allDexInfo: PokemonAPIObject[] = [];
   let allPokemonInfo: Object[] = [];
   let allSpecInfo: Object[] = [];
@@ -169,10 +149,25 @@ export const Access = () => {
 
     switch (name) {
       case "DexInfo":
-        res = await prisma.dexINFO.findMany();
+        res = await prisma.dexInfo.findMany();
         break;
       case "TypeInfo":
-        res = await prisma.typeINFO.findMany();
+        res = await prisma.typeInfo.findMany();
+        break;
+      case "AbilityInfo":
+        res = await prisma.abilityInfo.findMany();
+        break;
+      case "MoveInfo":
+        res = await prisma.moveInfo.findMany();
+        break;
+      case "ItemInfo":
+        res = await prisma.itemInfo.findMany();
+        break;
+      case "NatureInfo":
+        res = await prisma.natureInfo.findMany();
+        break;
+      case "BaseInfo":
+        res = await prisma.baseInfo.findMany();
         break;
     }
     return res;
@@ -356,7 +351,7 @@ export const Access = () => {
     });
      
     // まとめて挿入
-    const results = await prisma.dexINFO.createMany({
+    const results = await prisma.dexInfo.createMany({
       data: insert_dex
     });
     await prisma.$disconnect();
@@ -380,7 +375,7 @@ export const Access = () => {
       insert_type.push(format);
     });
 
-    const results = await prisma.typeINFO.createMany({
+    const results = await prisma.typeInfo.createMany({
       data: insert_type
     });
     await prisma.$disconnect();
@@ -388,11 +383,156 @@ export const Access = () => {
 
   };
 
+  const InsertPokemonAbilityInfoDB = async ():Promise<void> => {
+    let res = await getPostsDB("AbilityInfo");
+    if(res && res?.length > 0) {
+      console.log("--- AbilityInfo Already Inserted ---");
+      return;
+    }
+
+    let insert_ability:any[] = [];
+    allAbilityInfo.forEach((data:any) => {
+      let format = {
+        abilityID: parseInt(data.url.split("/")[6]),
+        abilityName: data.name
+      };
+      insert_ability.push(format);
+    });
+
+    const results = await prisma.abilityInfo.createMany({
+      data: insert_ability
+    });
+    await prisma.$disconnect();
+    console.log("--- AbilityInfo Inserted ---");
+  };
+
+  const InsertPokemonMoveInfoDB = async ():Promise<void> => {
+    let res = await getPostsDB("MoveInfo");
+    if(res && res?.length > 0) {
+      console.log("--- MoveInfo Already Inserted ---");
+      return;
+    }
+
+    let insert_move:any[] = [];
+    allMoveInfo.forEach((data:any) => {
+      let format = {
+        moveID: parseInt(data.url.split("/")[6]),
+        moveName: data.name
+      };
+      insert_move.push(format);
+    });
+
+    const results = await prisma.moveInfo.createMany({
+      data: insert_move
+    });
+    await prisma.$disconnect();
+    console.log("--- MoveInfo Inserted ---");
+  };
+
+  const InsertPokemonItemInfoDB = async ():Promise<void> => {
+    let res = await getPostsDB("ItemInfo");
+    if(res && res?.length > 0) {
+      console.log("--- ItemInfo Already Inserted ---");
+      return;
+    }
+
+    let insert_item:any[] = [];
+    allItemInfo.forEach((data:any) => {
+      let format = {
+        itemID: parseInt(data.url.split("/")[6]),
+        itemName: data.name
+      };
+      insert_item.push(format);
+    });
+
+    // 重複しているアイテム名があるため、skipDuplicatesをtrueにする
+    const results = await prisma.itemInfo.createMany({
+      data: insert_item,
+      skipDuplicates: true
+    });
+    await prisma.$disconnect();
+    console.log("--- ItemInfo Inserted ---");
+  };
+
+  const InsertPokemonNatureInfoDB = async ():Promise<void> => {
+    let res = await getPostsDB("NatureInfo");
+    if(res && res?.length > 0) {
+      console.log("--- NatureInfo Already Inserted ---");
+      return;
+    }
+
+    let insert_nature:any[] = [];
+    allNatureInfo.forEach((data:any) => {
+      let format = {
+        natureID: parseInt(data.url.split("/")[6]),
+        natureName: data.name
+      };
+      insert_nature.push(format);
+    });
+
+    const results = await prisma.natureInfo.createMany({
+      data: insert_nature
+    });
+    await prisma.$disconnect();
+    console.log("--- NatureInfo Inserted ---");
+  };
+
+  const InsertPokemonBaseInfoDB = async ():Promise<void> => { 
+    let res = await getPostsDB("BaseInfo");
+    if(res && res?.length > 0) {
+      console.log("--- BaseInfo Already Inserted ---");
+      return;
+    }
+
+    let resDex = await getPostsDB("DexInfo");
+    if(!resDex) {
+      console.log("--- DexInfo is Empty ---");
+      return;
+    }
+
+    // 加工準備
+    let insert_base:any[] = [];
+
+    //非同期処理もあるため map を利用
+    resDex.map(async (data:any) => {
+      let format = {
+        nationalDexAPI: data.nationalDexAPI,
+      };
+
+      if(data.nationalDexAPI === 1) {
+
+        console.log("成功");
+        console.log(allPokemonInfo[data.nationalDexAPI - 1].id);
+
+      }
+
+      insert_base.push(format);
+    });
+    console.log("--- BaseInfo Inserted ---");
+    // let insert_base:any[] = [];
+    // allPokemonInfo.forEach((data:any) => {
+      
+    // });
+  };
+
+  //* Main Process
   let promise_fetchPokemonAPI = FetchPokeAPI();
   Promise.all([promise_fetchPokemonAPI]).then(() => {
     console.log(``);
-    InsertPokemonDexInfoDB();
-    InsertPokemonTypeInfoDB();
+    let promises = [
+      InsertPokemonDexInfoDB(),
+      InsertPokemonTypeInfoDB(),
+      InsertPokemonAbilityInfoDB(),
+      InsertPokemonMoveInfoDB(),
+      InsertPokemonItemInfoDB(),
+      InsertPokemonNatureInfoDB()
+    ];
+
+    // 上記処理してからBaseInfoを挿入する
+    Promise.all(promises).then(() => {
+      console.log(``);
+      InsertPokemonBaseInfoDB();
+    });
   });
 
   return (

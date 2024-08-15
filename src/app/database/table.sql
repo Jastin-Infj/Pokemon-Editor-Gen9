@@ -26,10 +26,20 @@ CREATE TABLE IF NOT EXISTS MoveINFO(
   moveName VARCHAR(255) NOT NULL UNIQUE
 );
 
+CREATE TABLE IF NOT EXISTS ItemINFO(
+  itemID INT NOT NULL UNIQUE,
+  itemName VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS NatureINFO(
+  natureID INT NOT NULL UNIQUE,
+  natureName VARCHAR(255) NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS BaseInfo (
   nationalDexAPI INT NOT NULL,
-  type1_ID INT NOT NULL,
-  type2_ID INT,
+  type1 INT NOT NULL,
+  type2 INT,
   ability1 INT NOT NULL,
   ability2 INT,
   ability3 INT,
@@ -41,9 +51,4 @@ CREATE TABLE IF NOT EXISTS BaseInfo (
   baseSpDef INT NOT NULL,
   baseSpeed INT NOT NULL,
   FOREIGN KEY (nationalDexAPI) REFERENCES DexINFO(nationalDexAPI), -- 外部キー制約
-  FOREIGN KEY (type1_ID) REFERENCES TypeINFO(typeID), -- 外部キー制約
-  FOREIGN KEY (type2_ID) REFERENCES TypeINFO(typeID), -- 外部キー制約
-  FOREIGN KEY (ability1) REFERENCES AbilityINFO(abilityID), -- 外部キー制約
-  FOREIGN KEY (ability2) REFERENCES AbilityINFO(abilityID), -- 外部キー制約
-  FOREIGN KEY (ability3) REFERENCES AbilityINFO(abilityID) -- 外部キー制約
 );
