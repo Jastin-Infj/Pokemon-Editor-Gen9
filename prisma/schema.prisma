@@ -23,40 +23,48 @@ model DexInfo {
 
 // 外部キーなし 1対多になりTypeInfoの役割が矛盾するため
 model TypeInfo {
-  typeID   Int    @id @default(autoincrement())
+  typeID   Int    @id @unique
   typeName String @unique
 }
 
 model AbilityInfo {
-  abilityID   Int    @id @default(autoincrement())
+  abilityID   Int    @id @unique
   abilityName String @unique
 }
 
 model MoveInfo {
-  moveID   Int    @id @default(autoincrement())
+  moveID   Int    @id @unique
   moveName String @unique
 }
 
 model ItemInfo {
-  itemID   Int    @id @default(autoincrement())
+  itemID   Int    @id @unique
   itemName String @unique
 }
 
 model NatureInfo {
-  natureID   Int    @id @default(autoincrement())
+  natureID   Int    @id @unique
   natureName String @unique
+}
+
+model MoveLearnList {
+  id           Int @id @default(autoincrement())
+  nationalDexAPI Int
+  moveID        Int
+  moveLevel     Int
+  moveVersion   String
+
+  BaseInfo      BaseInfo @relation(fields: [nationalDexAPI], references: [nationalDexAPI])
 }
 
 model BaseInfo {
   // 一意的なIDがprismaは必要
-  id      Int     @id @default(autoincrement())
-  nationalDexAPI Int
-  type1       Int
-  type2       Int?
+  nationalDexAPI Int @id @default(autoincrement())
+  type1          Int
+  type2          Int
   ability1       Int
   ability2       Int
   ability3       Int
-  moveList       Json
   baseHP         Int
   baseAttack     Int
   baseDefense    Int
@@ -65,4 +73,5 @@ model BaseInfo {
   baseSpeed      Int
 
   dexInfo     DexInfo      @relation(fields: [nationalDexAPI], references: [nationalDexAPI], onDelete: Cascade)
+  moveList    MoveLearnList[]
 }

@@ -31,28 +31,72 @@ export interface PokemonAPIObject {
   url: string
 };
 
-export interface VersionGroupObject {
-  level_learned_at: number,
+export type PokemonDataMoveLearnName = "level-up" | "machine" | "tutor" | "egg";
+export type PokemonVersionGroupName = 
+  "red-blue" | "yellow" | 
+  "gold-silver" | "crystal" | 
+  "ruby-sapphire" | "emerald" | "firered-leafgreen" | "colosseum" | "xd" |
+  "diamond-pearl" | "platinum" | "heartgold-soulsilver" | 
+  "black-white" | "black-2-white-2" | 
+  "x-y" | "omega-ruby-alpha-sapphire" | 
+  "sun-moon" | "ultra-sun-ultra-moon" | 
+  "sword-shield" | "letsgo-pikachu-eevee" |
+  "scarlet-violet";
+
+export interface PokemonVersionObject {
+  name: PokemonVersionGroupName,
+  url: string
+};
+ 
+export interface DataMoveGroupObject {
+  level_learned_at: PokemonDataMoveLearnName,
   move_learn_method: object,
-  version_group: object
+  version_group: PokemonVersionObject
 };
 
-export interface PokemonMoveObject {
+export interface DataMoveObject {
   move: PokemonAPIObject,
-  version_group_details: VersionGroupObject[]
+  version_group_details: DataMoveGroupObject[]
 };
 
 export interface PokemonDataBase {
-  id: number | null,
-  nameJa: string | null,
-  nameEn: string | null,
-  type1: string | null,
-  type2: string | null,
-  ability1: string | null,
-  ability2: string | null,
-  abilityH: string | null,
+  nationalDexAPI: number | null,
+  nameJa?: string | null,
+  nameEn?: string | null,
+  type1: string | number |  null,
+  type2: string | number | null,
+  ability1: string | number |  null,
+  ability2: string | number | null,
+  ability3: string | number | null,
   basestatus: BaseStatus,
-  moves: PokemonMoveObject[],
+  moves: DataMoveObject[],
 }
 
 export type PokemonDataBaseName = "DexInfo" | "TypeInfo" | "AbilityInfo" | "MoveInfo" | "ItemInfo" | "NatureInfo" | "BaseInfo" | null;
+
+export interface DataType {
+  slot: number,
+  type: {
+    name: string,
+    url: string
+  }
+};
+
+export interface DataAbility {
+  ability: {
+    name: string,
+    url: string
+  },
+  is_hidden: boolean,
+  slot: number
+};
+
+export type BaseStatusName = "hp" | "attack" | "defense" | "special-attack" | "special-defense" | "speed";
+export interface DataBaseStat {
+  base_stat: number,
+  effort: number,
+  stat: {
+    name: BaseStatusName,
+    url: string
+  }
+}
