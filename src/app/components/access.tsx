@@ -4,6 +4,7 @@ import { PokemonClient  , MoveClient } from 'pokenode-ts';
 import { DataAbility, DataBaseStat , DataMoveObject, DataType, PokemonAPIObject, PokemonDataBase, PokemonDataBaseName, PokemonVersionGroupName } from '@/types';
 
 import fs from 'fs';
+import { Prisma } from "@prisma/client";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
@@ -528,72 +529,84 @@ export const Access = () => {
         moves = _allPokemonInfo[0]["moves"];
 
         let types_promise = Promise.all(types.map(async (values) => {
-          let res_type = null;
-          res_type = await prisma.typeInfo.findFirst({
-            where: {
-              typeName: values.type.name
+          try {
+            let res_type = null;
+            res_type = await prisma.typeInfo.findFirst({
+              where: {
+                typeName: values.type.name
+              }
+            });
+        
+            if(res_type) {
+              switch(values.slot) {
+                case 1:
+                  format.type1 = res_type.typeID;
+                  break;
+                case 2:
+                  format.type2 = res_type.typeID;
+                  break;
+              }
             }
-          });
-
-          if(res_type) {
-            switch(values.slot) {
-              case 1:
-                format.type1 = res_type.typeID;
-                break;
-              case 2:
-                format.type2 = res_type.typeID;
-                break;
-            }
+          } catch (error) {
+            console.error("Error processing types:", error);
           }
         }));
 
         let ability_promise = Promise.all(ability.map(async (values) => {
-          let res_ability = null;
-          res_ability = await prisma.abilityInfo.findFirst({
-            where: {
-              abilityName: values.ability.name
-            }
-          });
+          try {
+            let res_ability = null;
+            res_ability = await prisma.abilityInfo.findFirst({
+              where: {
+                abilityName: values.ability.name
+              }
+            });
 
-          if(res_ability) {
-            switch(values.slot) {
-              case 1:
-                format.ability1 = res_ability.abilityID;
-                break;
-              case 2:
-                format.ability2 = res_ability.abilityID;
-                break;
-              case 3:
-                format.ability3 = res_ability.abilityID;
-                break;
+            if(res_ability) {
+              switch(values.slot) {
+                case 1:
+                  format.ability1 = res_ability.abilityID;
+                  break;
+                case 2:
+                  format.ability2 = res_ability.abilityID;
+                  break;
+                case 3:
+                  format.ability3 = res_ability.abilityID;
+                  break;
+              }
             }
-          }
-          
-          if(format.ability2 === 0) {
-            format.ability2 = null;
+            
+            if(format.ability2 === 0) {
+              format.ability2 = null;
+            }
+          } catch (error) {
+            console.error("Error processing ability:", error);
           }
         }));
 
         let status_promise = Promise.all(status.map(async (values) => {
-          switch(values.stat.name) {
-            case "hp":
-              format.basestatus.hp = values.base_stat;
-              break;
-            case "attack":
-              format.basestatus.attack = values.base_stat;
-              break;
-            case "defense":
-              format.basestatus.defense = values.base_stat;
-              break;
-            case "special-attack":
-              format.basestatus.spattack = values.base_stat;
-              break;
-            case "special-defense":
-              format.basestatus.spdefense = values.base_stat;
-              break;
-            case "speed":
-              format.basestatus.speed = values.base_stat;
-              break;
+          try {
+            switch(values.stat.name) {
+              case "hp":
+                format.basestatus.hp = values.base_stat;
+                break;
+              case "attack":
+                format.basestatus.attack = values.base_stat;
+                break;
+              case "defense":
+                format.basestatus.defense = values.base_stat;
+                break;
+              case "special-attack":
+                format.basestatus.spattack = values.base_stat;
+                break;
+              case "special-defense":
+                format.basestatus.spdefense = values.base_stat;
+                break;
+              case "speed":
+                format.basestatus.speed = values.base_stat;
+                break;
+            }
+          } catch (error) {
+            console.error("Error processing status:", error);
           }
         }));
 
@@ -605,28 +618,26 @@ export const Access = () => {
             },
             version_group_details: []
           };
-
+        
           moveFormat.move.name = values.move.name;
           moveFormat.move.url = values.move.url;
-
+        
           let learnList = values.version_group_details.filter((val:any) => {
             let versionGroup: PokemonVersionGroupName = val.version_group.name;
-            let obj = null;
             return versionGroup === "scarlet-violet";
           });
           
           if(learnList.length === 0) return false;
           moveFormat.version_group_details = learnList;
           return moveFormat;
-
+        
         })).then(async (res) => {
           if(res.length === 0) return res;
-
-          console.log(res);
+        
           res.forEach((values:any) => {
             // 覚えるわざがない場合はスキップ
             if(values === false) return;
-
+        
             let version_group_details = values.version_group_details;
             format.moves.push({
               move: {
@@ -636,10 +647,85 @@ export const Access = () => {
               version_group_details: version_group_details
             });
           });
+        }).catch((error) => {
+          console.error("Error processing moves:", error);
         });
 
         Promise.all([types_promise , ability_promise , status_promise , moves_promise]).then(async (res) => {
-          console.log(format);
+          // console.log(data.nationalDexAPI);
+          // console.log(parseInt(format.moves[0].move.url.split("/")[6]));
+          // console.log(parseInt(format.moves[0].version_group_details[0].level_learned_at));
+          // console.log(format.moves[0].version_group_details[0].version_group.name);
+
+          let _type1 = format.type1 as number;
+          let _type2 = format.type2 as number;
+          let _ability1 = format.ability1 as number;
+          let _ability2 = format.ability2 as number;
+          let _ability3 = format.ability3 as number;
+          let _hp = format.basestatus.hp as number;
+          let _attack = format.basestatus.attack as number;
+          let _defense = format.basestatus.defense as number;
+          let _spattack = format.basestatus.spattack as number;
+          let _spdefense = format.basestatus.spdefense as number;
+          let _speed = format.basestatus.speed as number;
+
+          const _dexinfo = await prisma.dexInfo.findFirst({
+            where: {
+              nationalDexAPI: data.nationalDexAPI
+            }
+          });
+
+          // 挿入
+          try {
+            const data: any = {
+              basenationalDexAPI: 1,
+              type1: _type1,
+              type2: _type2,
+              ability1: _ability1,
+              ability2: _ability2,
+              ability3: _ability3,
+              baseHP: _hp,
+              baseAttack: _attack,
+              baseDefense: _defense,
+              baseSpAttack: _spattack,
+              baseSpDefense: _spdefense,
+              baseSpeed: _speed,
+            };
+
+            if (_dexinfo?.nationalDexAPI !== undefined) {
+              data.dexInfo = {
+                connect: {
+                  nationalDexAPI: _dexinfo.nationalDexAPI,
+                },
+              };
+            }
+
+            const result = await prisma.baseInfo.create({
+              data: data,
+            });
+
+            
+          } catch (error) {
+            if (error instanceof Prisma.PrismaClientValidationError) {
+              console.error("Validation Error:", error.message);
+            } else {
+              console.error("Error creating baseInfo:", error);
+            }
+          } finally {
+            await prisma.$disconnect();
+          }
+          
+          
+          // 後でわざリストを挿入する
+          // await prisma.moveLearnList.createMany({
+          //   data: {
+          //     nationalDexAPI: data.nationalDexAPI,
+          //     moveID: parseInt(format.moves[0].move.url.split("/")[6]),
+          //     moveLevel: parseInt(format.moves[0].version_group_details[0].level_learned_at),
+          //     moveVersion: format.moves[0].version_group_details[0].version_group.name,
+          //   }
+          // });
+
           console.log("--- Fin ---");
         });
 
