@@ -194,7 +194,6 @@ export const Access = () => {
     }
     console.log("--- DexInfo Fin ---");
 
-
     // すでにファイルが存在する場合はjson読み込む
     if(fs.existsSync(JSON_POKEMON_INFO_PATH)){
       const fileContent = fs.readFileSync(JSON_POKEMON_INFO_PATH , 'utf-8');
@@ -209,6 +208,7 @@ export const Access = () => {
       );
       fs.writeFileSync(JSON_POKEMON_INFO_PATH, JSON.stringify(PokemonList, null, 2));
       allPokemonInfo = PokemonList;
+      console.log(allPokemonInfo);
     }
     console.log("--- PokemonList Fin ---");
 
@@ -650,15 +650,15 @@ export const Access = () => {
     }); // Promise All End
   }; // Func End
 
-  const InsertPokemonDataFormatCreate_BaseInfo = async (promises: Promise<void>[] , format:PokemonDataBase , dexNum: number):Promise<void> => {
+  const InsertPokemonDataFormatCreate_BaseInfo = async (promises: Promise<void>[] , format:PokemonDataBase , id: number):Promise<void> => {
 
     const _dexinfo = await prisma.dexInfo.findFirst({
       where: {
-        nationalDexAPI: dexNum
+        id: id
       }
     });
 
-    const Insert_BaseInfo = async (dexNum: number):Promise<void> => {
+    const Insert_BaseInfo = async ():Promise<void> => {
       let _type1 = format.type1 as number;
       let _type2 = format.type2 as number;
       let _ability1 = format.ability1 as number;
@@ -674,7 +674,7 @@ export const Access = () => {
       // 挿入
       try {
         const data: any = {
-          basenationalDexAPI: dexNum,
+          basenationalDexAPI: _dexinfo?.nationalDexAPI,
           type1: _type1,
           type2: _type2,
           ability1: _ability1,
@@ -739,17 +739,17 @@ export const Access = () => {
     // メイン処理
     Promise.all(promises).then(async (res) => {
       // 基本情報の挿入
-      await Insert_BaseInfo(dexNum);
+      await Insert_BaseInfo();
       // わざ情報を挿入
       await Insert_MoveLearnList();
 
     }); // Promise All End
   }; // Func End
 
-  const InsertPokemonDataFormatCreate_Main = async (dexNum: number):Promise<void> => {
+  const InsertPokemonDataFormatCreate_Main = async (id: number):Promise<void> => {
     let _allPokemonInfo:any = [...allPokemonInfo];
     let format: PokemonDataBase = {
-      nationalDexAPI: dexNum,
+      nationalDexAPI: id,
       type1: 0,
       type2: 0,
       ability1: 0,
@@ -769,10 +769,10 @@ export const Access = () => {
     let ability: DataAbility[];
     let status: DataBaseStat[];
     let moves: DataMoveObject[];
-    types = _allPokemonInfo[dexNum - 1]["types"];
-    ability = _allPokemonInfo[dexNum - 1]["abilities"];
-    status = _allPokemonInfo[dexNum - 1]["stats"];
-    moves = _allPokemonInfo[dexNum - 1]["moves"];
+    types = _allPokemonInfo[id - 1]["types"];
+    ability = _allPokemonInfo[id - 1]["abilities"];
+    status = _allPokemonInfo[id - 1]["stats"];
+    moves = _allPokemonInfo[id - 1]["moves"];
 
     // 各データを挿入
     let promises = [
@@ -781,7 +781,7 @@ export const Access = () => {
       InsertPokemonDataFormatCreate_Status(status , format),
       InsertPokemonDataFormatCreate_Moves(moves , format),
     ];
-    await InsertPokemonDataFormatCreate_BaseInfo(promises , format , dexNum);
+    await InsertPokemonDataFormatCreate_BaseInfo(promises , format , id);
   };  // Func End
 
   const InsertPokemonBaseInfoDB = async ():Promise<void> => { 
@@ -799,12 +799,19 @@ export const Access = () => {
 
     //非同期処理もあるため map を利用
     resDex.map(async (data:any) => {
-      let dexNum = data.nationalDexAPI;
+      let id = data.id;
+
+      const NORMAL_LIMIT = 1025;
       
       // IDの指定可能
-      if(dexNum === 1) {
-        await InsertPokemonDataFormatCreate_Main(dexNum);
+      // if(dexNum >= 1 && dexNum <= NORMAL_LIMIT) {
+      //   await InsertPokemonDataFormatCreate_Main(dexNum);
+      // }
+
+      if(id > NORMAL_LIMIT){
+        await InsertPokemonDataFormatCreate_Main(id);
       }
+
     });
     // 関数外
     console.log("--- BaseInfo Inserted ---");
