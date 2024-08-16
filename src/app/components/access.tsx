@@ -479,6 +479,311 @@ export const Access = () => {
     console.log("--- NatureInfo Inserted ---");
   };
 
+  // タイプ情報の挿入
+  const InsertPokemonDataFormatCreate_Types = async (types: DataType[] , format: PokemonDataBase):Promise<void> => {
+    Promise.all(types.map(async (values) => {
+      try {
+        let res_type = null;
+        res_type = await prisma.typeInfo.findFirst({
+          where: {
+            typeName: values.type.name
+          }
+        });
+
+        if(res_type) {
+          switch(values.slot) {
+            case 1:
+              format.type1 = res_type.typeID;
+              break;
+            case 2:
+              format.type2 = res_type.typeID;
+              break;
+          }
+        }
+      } catch (error) {
+        console.error("Error processing types:", error);
+      }
+    }));
+  };
+
+  const InsertPokemonDataFormatCreate_Ability = async (ability: DataAbility[] , format: PokemonDataBase):Promise<void> => {
+    Promise.all(ability.map(async (values) => {
+      try {
+        let res_ability = null;
+        res_ability = await prisma.abilityInfo.findFirst({
+          where: {
+            abilityName: values.ability.name
+          }
+        });
+
+        if(res_ability) {
+          switch(values.slot) {
+            case 1:
+              format.ability1 = res_ability.abilityID;
+              break;
+            case 2:
+              format.ability2 = res_ability.abilityID;
+              break;
+            case 3:
+              format.ability3 = res_ability.abilityID;
+              break;
+          }
+        }
+        
+        if(format.ability2 === 0) {
+          format.ability2 = null;
+        }
+      } catch (error) {
+        console.error("Error processing ability:", error);
+      }
+    }));
+  };
+
+  const InsertPokemonDataFormatCreate_Status = async (status: DataBaseStat[] , format: PokemonDataBase):Promise<void> => {
+    Promise.all(status.map(async (values) => {
+      try {
+        switch(values.stat.name) {
+          case "hp":
+            format.basestatus.hp = values.base_stat;
+            break;
+          case "attack":
+            format.basestatus.attack = values.base_stat;
+            break;
+          case "defense":
+            format.basestatus.defense = values.base_stat;
+            break;
+          case "special-attack":
+            format.basestatus.spattack = values.base_stat;
+            break;
+          case "special-defense":
+            format.basestatus.spdefense = values.base_stat;
+            break;
+          case "speed":
+            format.basestatus.speed = values.base_stat;
+            break;
+        }
+      } catch (error) {
+        console.error("Error processing status:", error);
+      }
+    }));
+  }; // Func End
+
+  const InsertPokemonDataFormatCreate_Moves = async (moves: DataMoveObject[] , format: PokemonDataBase):Promise<void> => {
+    Promise.all(moves.map(async (values) => {
+      let moveFormat: DataMoveObject = {
+        move: {
+          name: "",
+          url: ""
+        },
+        version_group_details: []
+      };
+    
+      moveFormat.move.name = values.move.name;
+      moveFormat.move.url = values.move.url;
+
+      let learnList = values.version_group_details.filter((val:any) => {
+        let versionGroup: PokemonVersionGroupName = val.version_group.name;
+        return versionGroup === "scarlet-violet";
+      });
+      
+      if(learnList.length === 0) return false;
+      moveFormat.version_group_details = learnList;
+      return moveFormat;
+    
+    })).then(async (res) => {
+      if(res.length === 0) return res;
+
+      res.forEach((values:any) => {
+        // 覚えるわざがない場合はスキップ
+        if(values === false) return;
+    
+        let version_group_details = values.version_group_details;
+
+        let push_data = {
+          move: {
+            name: values.move.name,
+            url: values.move.url
+          },
+          version_group_details: values.version_group_details,
+        };
+        format.moves.push(push_data);
+      });
+
+      const learnMethodOrder = {
+        'level-up': 1,
+        'machine': 2,
+        'tutor': 3,
+        'egg': 4
+      };
+      
+      // 習得方法順を先にソート
+      format.moves.forEach((values) => {
+        values.version_group_details.sort((a,b) => {
+          let a_learn:PokemonDataMoveLearnName = a.move_learn_method.name;
+          let b_learn:PokemonDataMoveLearnName = b.move_learn_method.name;
+          return learnMethodOrder[a_learn] - learnMethodOrder[b_learn];
+        });
+      });
+
+      // MoveID 昇順
+      format.moves.sort((a,b) => {
+        // Move ID 昇順
+        if(parseInt(a.move.url.split("/")[6]) !== parseInt(b.move.url.split("/")[6])) {
+          return parseInt(a.move.url.split("/")[6]) - parseInt(b.move.url.split("/")[6]);
+        }
+        return 0;
+      });
+
+      //* データ確認
+      // format.moves.forEach((values) => {
+      //   let moveID = parseInt(values.move.url.split("/")[6]);
+      //   let moveName = values.move.name
+      //   values.version_group_details.forEach((val) => {
+      //     let level = val.level_learned_at;
+      //     let version = val.version_group.name;
+      //     let move_learn_method = val.move_learn_method.name;
+      //     console.log(`MoveID: ${moveID} , MoveName: ${moveName} , Level: ${level} , Version: ${version} , LearnMethod: ${move_learn_method}`);
+      //   });
+      // });
+    }).catch((error) => {
+      console.error("Error processing moves:", error);
+    }); // Promise All End
+  }; // Func End
+
+  const InsertPokemonDataFormatCreate_BaseInfo = async (promises: Promise<void>[] , format:PokemonDataBase , dexNum: number):Promise<void> => {
+
+    const _dexinfo = await prisma.dexInfo.findFirst({
+      where: {
+        nationalDexAPI: dexNum
+      }
+    });
+
+    const Insert_BaseInfo = async (dexNum: number):Promise<void> => {
+      let _type1 = format.type1 as number;
+      let _type2 = format.type2 as number;
+      let _ability1 = format.ability1 as number;
+      let _ability2 = format.ability2 as number;
+      let _ability3 = format.ability3 as number;
+      let _hp = format.basestatus.hp as number;
+      let _attack = format.basestatus.attack as number;
+      let _defense = format.basestatus.defense as number;
+      let _spattack = format.basestatus.spattack as number;
+      let _spdefense = format.basestatus.spdefense as number;
+      let _speed = format.basestatus.speed as number;
+
+      // 挿入
+      try {
+        const data: any = {
+          basenationalDexAPI: dexNum,
+          type1: _type1,
+          type2: _type2,
+          ability1: _ability1,
+          ability2: _ability2,
+          ability3: _ability3,
+          baseHP: _hp,
+          baseAttack: _attack,
+          baseDefense: _defense,
+          baseSpAttack: _spattack,
+          baseSpDefense: _spdefense,
+          baseSpeed: _speed,
+        };
+
+        if (_dexinfo?.nationalDexAPI !== undefined) {
+          data.dexInfo = {
+            connect: {
+              nationalDexAPI: _dexinfo.nationalDexAPI,
+            },
+          };
+        }
+
+        const result = await prisma.baseInfo.create({
+          data: data,
+        });
+        
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error("Validation Error:", error.message);
+        } else {
+          console.error("Error creating baseInfo:", error);
+        }
+      } finally {
+        await prisma.$disconnect();
+      }
+    };
+
+    const Insert_MoveLearnList = async ():Promise<void> => {
+
+      try {
+        let moveInputs:any = [];
+        format.moves.forEach(async (values) => {
+          const moveData = {
+            movenationalDexAPI: _dexinfo?.nationalDexAPI,
+            moveID: parseInt(values.move.url.split("/")[6]),
+            moveLevel: values.version_group_details[0].level_learned_at,
+            moveVersion: values.version_group_details[0].version_group.name,
+          };
+          moveInputs.push(moveData);
+        });
+
+        await prisma.moveLearnList.createMany({
+          data: moveInputs,
+        });
+
+      } catch (error) {
+        console.error("Error creating moveLearnList:", error);
+      } finally {
+        await prisma.$disconnect();
+      }
+    }; // Func End
+
+    // メイン処理
+    Promise.all(promises).then(async (res) => {
+      // 基本情報の挿入
+      await Insert_BaseInfo(dexNum);
+      // わざ情報を挿入
+      await Insert_MoveLearnList();
+
+    }); // Promise All End
+  }; // Func End
+
+  const InsertPokemonDataFormatCreate_Main = async (dexNum: number):Promise<void> => {
+    let _allPokemonInfo:any = [...allPokemonInfo];
+    let format: PokemonDataBase = {
+      nationalDexAPI: dexNum,
+      type1: 0,
+      type2: 0,
+      ability1: 0,
+      ability2 : 0,
+      ability3: 0,
+      basestatus: {
+        hp: 0,
+        attack: 0,
+        defense: 0,
+        spattack: 0,
+        spdefense: 0,
+        speed: 0
+      },
+      moves: []
+    };
+    let types: DataType[];
+    let ability: DataAbility[];
+    let status: DataBaseStat[];
+    let moves: DataMoveObject[];
+    types = _allPokemonInfo[dexNum - 1]["types"];
+    ability = _allPokemonInfo[dexNum - 1]["abilities"];
+    status = _allPokemonInfo[dexNum - 1]["stats"];
+    moves = _allPokemonInfo[dexNum - 1]["moves"];
+
+    // 各データを挿入
+    let promises = [
+      InsertPokemonDataFormatCreate_Types(types , format),
+      InsertPokemonDataFormatCreate_Ability(ability , format),
+      InsertPokemonDataFormatCreate_Status(status , format),
+      InsertPokemonDataFormatCreate_Moves(moves , format),
+    ];
+    await InsertPokemonDataFormatCreate_BaseInfo(promises , format , dexNum);
+  };  // Func End
+
   const InsertPokemonBaseInfoDB = async ():Promise<void> => { 
     let res = await getPostsDB("BaseInfo");
     if(res && res?.length > 0) {
@@ -492,298 +797,23 @@ export const Access = () => {
       return;
     }
 
-    let _allPokemonInfo:any = [...allPokemonInfo];
-
-    // 加工準備
-    let insert_base:any[] = [];
-
     //非同期処理もあるため map を利用
     resDex.map(async (data:any) => {
-      let format: PokemonDataBase = {
-        nationalDexAPI: data.nationalDexAPI,
-        type1: 0,
-        type2: 0,
-        ability1: 0,
-        ability2 : 0,
-        ability3: 0,
-        basestatus: {
-          hp: 0,
-          attack: 0,
-          defense: 0,
-          spattack: 0,
-          spdefense: 0,
-          speed: 0
-        },
-        moves: []
-      };
-
-      if(data.nationalDexAPI === 1) {
-        console.log("成功");
-        let types: DataType[];
-        let ability: DataAbility[];
-        let status: DataBaseStat[];
-        let moves: DataMoveObject[];
-
-        types = _allPokemonInfo[0]["types"];
-        ability = _allPokemonInfo[0]["abilities"];
-        status = _allPokemonInfo[0]["stats"];
-        moves = _allPokemonInfo[0]["moves"];
-
-        let types_promise = Promise.all(types.map(async (values) => {
-          try {
-            let res_type = null;
-            res_type = await prisma.typeInfo.findFirst({
-              where: {
-                typeName: values.type.name
-              }
-            });
-        
-            if(res_type) {
-              switch(values.slot) {
-                case 1:
-                  format.type1 = res_type.typeID;
-                  break;
-                case 2:
-                  format.type2 = res_type.typeID;
-                  break;
-              }
-            }
-          } catch (error) {
-            console.error("Error processing types:", error);
-          }
-        }));
-
-        let ability_promise = Promise.all(ability.map(async (values) => {
-          try {
-            let res_ability = null;
-            res_ability = await prisma.abilityInfo.findFirst({
-              where: {
-                abilityName: values.ability.name
-              }
-            });
-
-            if(res_ability) {
-              switch(values.slot) {
-                case 1:
-                  format.ability1 = res_ability.abilityID;
-                  break;
-                case 2:
-                  format.ability2 = res_ability.abilityID;
-                  break;
-                case 3:
-                  format.ability3 = res_ability.abilityID;
-                  break;
-              }
-            }
-            
-            if(format.ability2 === 0) {
-              format.ability2 = null;
-            }
-          } catch (error) {
-            console.error("Error processing ability:", error);
-          }
-        }));
-
-        let status_promise = Promise.all(status.map(async (values) => {
-          try {
-            switch(values.stat.name) {
-              case "hp":
-                format.basestatus.hp = values.base_stat;
-                break;
-              case "attack":
-                format.basestatus.attack = values.base_stat;
-                break;
-              case "defense":
-                format.basestatus.defense = values.base_stat;
-                break;
-              case "special-attack":
-                format.basestatus.spattack = values.base_stat;
-                break;
-              case "special-defense":
-                format.basestatus.spdefense = values.base_stat;
-                break;
-              case "speed":
-                format.basestatus.speed = values.base_stat;
-                break;
-            }
-          } catch (error) {
-            console.error("Error processing status:", error);
-          }
-        }));
-
-        let moves_promise = Promise.all(moves.map(async (values) => {
-          let moveFormat: DataMoveObject = {
-            move: {
-              name: "",
-              url: ""
-            },
-            version_group_details: []
-          };
-        
-          moveFormat.move.name = values.move.name;
-          moveFormat.move.url = values.move.url;
-
-          let learnList = values.version_group_details.filter((val:any) => {
-            let versionGroup: PokemonVersionGroupName = val.version_group.name;
-            return versionGroup === "scarlet-violet";
-          });
-          
-          if(learnList.length === 0) return false;
-          moveFormat.version_group_details = learnList;
-          return moveFormat;
-        
-        })).then(async (res) => {
-          if(res.length === 0) return res;
-
-          res.forEach((values:any) => {
-            // 覚えるわざがない場合はスキップ
-            if(values === false) return;
-        
-            let version_group_details = values.version_group_details;
-
-            let push_data = {
-              move: {
-                name: values.move.name,
-                url: values.move.url
-              },
-              version_group_details: values.version_group_details,
-            };
-            format.moves.push(push_data);
-          });
-
-          const learnMethodOrder = {
-            'level-up': 1,
-            'machine': 2,
-            'tutor': 3,
-            'egg': 4
-          };
-          
-          // 習得方法順を先にソート
-          format.moves.forEach((values) => {
-            values.version_group_details.sort((a,b) => {
-              let a_learn:PokemonDataMoveLearnName = a.move_learn_method.name;
-              let b_learn:PokemonDataMoveLearnName = b.move_learn_method.name;
-              return learnMethodOrder[a_learn] - learnMethodOrder[b_learn];
-            });
-          });
-
-          // MoveID 昇順
-          format.moves.sort((a,b) => {
-            // Move ID 昇順
-            if(parseInt(a.move.url.split("/")[6]) !== parseInt(b.move.url.split("/")[6])) {
-              return parseInt(a.move.url.split("/")[6]) - parseInt(b.move.url.split("/")[6]);
-            }
-            return 0;
-          });
-
-          // データ確認
-          format.moves.forEach((values) => {
-            let moveID = parseInt(values.move.url.split("/")[6]);
-            let moveName = values.move.name;
-
-            values.version_group_details.forEach((val) => {
-              let level = val.level_learned_at;
-              let version = val.version_group.name;
-              let move_learn_method = val.move_learn_method.name;
-              console.log(`MoveID: ${moveID} , MoveName: ${moveName} , Level: ${level} , Version: ${version} , LearnMethod: ${move_learn_method}`);
-            });
-          });
-
-        }).catch((error) => {
-          console.error("Error processing moves:", error);
-        });
-
-        Promise.all([types_promise , ability_promise , status_promise , moves_promise]).then(async (res) => {
-          let _nationalDexAPI = data.nationalDexAPI as number;
-          let _type1 = format.type1 as number;
-          let _type2 = format.type2 as number;
-          let _ability1 = format.ability1 as number;
-          let _ability2 = format.ability2 as number;
-          let _ability3 = format.ability3 as number;
-          let _hp = format.basestatus.hp as number;
-          let _attack = format.basestatus.attack as number;
-          let _defense = format.basestatus.defense as number;
-          let _spattack = format.basestatus.spattack as number;
-          let _spdefense = format.basestatus.spdefense as number;
-          let _speed = format.basestatus.speed as number;
-
-          const _dexinfo = await prisma.dexInfo.findFirst({
-            where: {
-              nationalDexAPI: data.nationalDexAPI
-            }
-          });
-
-          // 挿入
-          try {
-            const data: any = {
-              basenationalDexAPI: _dexinfo?.nationalDexAPI,
-              type1: _type1,
-              type2: _type2,
-              ability1: _ability1,
-              ability2: _ability2,
-              ability3: _ability3,
-              baseHP: _hp,
-              baseAttack: _attack,
-              baseDefense: _defense,
-              baseSpAttack: _spattack,
-              baseSpDefense: _spdefense,
-              baseSpeed: _speed,
-            };
-
-            if (_dexinfo?.nationalDexAPI !== undefined) {
-              data.dexInfo = {
-                connect: {
-                  nationalDexAPI: _dexinfo.nationalDexAPI,
-                },
-              };
-            }
-
-            const result = await prisma.baseInfo.create({
-              data: data,
-            });
-
-            
-          } catch (error) {
-            if (error instanceof Prisma.PrismaClientValidationError) {
-              console.error("Validation Error:", error.message);
-            } else {
-              console.error("Error creating baseInfo:", error);
-            }
-          } finally {
-            await prisma.$disconnect();
-          }
-        
-          try {
-            let moveInputs:any = [];
-            // 昇順で更新しているため 0番目のみでOK
-            format.moves.forEach(async (values) => {
-              const moveData = {
-                movenationalDexAPI: _dexinfo?.nationalDexAPI,
-                moveID: parseInt(values.move.url.split("/")[6]),
-                moveLevel: values.version_group_details[0].level_learned_at,
-                moveVersion: values.version_group_details[0].version_group.name,
-              };
-
-              moveInputs.push(moveData);
-            });
-
-            await prisma.moveLearnList.createMany({
-              data: moveInputs,
-            });
-
-          } catch (error) {
-            console.error("Error creating moveLearnList:", error);
-          } finally {
-            await prisma.$disconnect();
-          }
-          console.log("--- Fin ---");
-        }); // Promise.all
-      } // 1匹だけ挿入する
-
+      let dexNum = data.nationalDexAPI;
+      
+      // IDの指定可能
+      if(dexNum === 1) {
+        await InsertPokemonDataFormatCreate_Main(dexNum);
+      }
     });
+    // 関数外
     console.log("--- BaseInfo Inserted ---");
-  };
+    
+  }; // Func End
 
+
+
+  
   //* Main Process
   let promise_fetchPokemonAPI = FetchPokeAPI();
   Promise.all([promise_fetchPokemonAPI]).then(() => {
