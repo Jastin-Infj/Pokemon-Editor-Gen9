@@ -56,8 +56,8 @@ model MoveLearnList {
   moveLevel     Int
   moveVersion   String
 
-  // // baseNationalDexAPIで紐づける
-  // baseInfo      BaseInfo @relation(fields: [movenationalDexAPI], references: [basenationalDexAPI], onDelete: Cascade)
+  // baseNationalDexAPIで紐づける
+  baseInfo      BaseInfo? @relation(fields: [movenationalDexAPI], references: [basenationalDexAPI], onDelete: Cascade)
 }
 
 model BaseInfo {
@@ -76,8 +76,9 @@ model BaseInfo {
   baseSpDefense    Int
   baseSpeed        Int
   dexInfo          DexInfo? @relation(fields: [f_nationalDexAPI], references: [nationalDexAPI])
+  moveInfo         MoveLearnList[]
 
-  // データベースとして保存されるが createでは使わない(null が入る)
+  // データベースとして保存されるが createはで使わない(null が入る)
   f_nationalDexAPI Int @unique // 検索用
 }
 

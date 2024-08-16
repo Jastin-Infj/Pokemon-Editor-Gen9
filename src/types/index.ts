@@ -47,16 +47,21 @@ export interface PokemonVersionObject {
   name: PokemonVersionGroupName,
   url: string
 };
- 
+
+export interface PokemonMoveLearnMethodObject {
+  name: PokemonDataMoveLearnName,
+  url: string
+}
+
 export interface DataMoveGroupObject {
-  level_learned_at: PokemonDataMoveLearnName,
-  move_learn_method: object,
+  level_learned_at: number,
+  move_learn_method: PokemonMoveLearnMethodObject,
   version_group: PokemonVersionObject
 };
 
 export interface DataMoveObject {
   move: PokemonAPIObject,
-  version_group_details: DataMoveGroupObject[]
+  version_group_details: DataMoveGroupObject[],
 };
 
 export interface PokemonDataBase {

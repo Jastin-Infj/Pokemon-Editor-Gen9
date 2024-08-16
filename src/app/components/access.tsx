@@ -1,10 +1,11 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { PokemonClient  , MoveClient } from 'pokenode-ts';
-import { DataAbility, DataBaseStat , DataMoveObject, DataType, PokemonAPIObject, PokemonDataBase, PokemonDataBaseName, PokemonVersionGroupName } from '@/types';
+import { DataAbility, DataBaseStat , DataMoveObject, DataType, PokemonAPIObject, PokemonDataBase, PokemonDataBaseName, PokemonDataMoveLearnName, PokemonMoveLearnMethodObject, PokemonVersionGroupName } from '@/types';
 
 import fs from 'fs';
 import { Prisma } from "@prisma/client";
+import { deleteAppClientCache } from "next/dist/server/lib/render-server";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
@@ -15,7 +16,7 @@ const JSON_POKEMON_ABILITY_PATH = "./src/json/pokemonAbility.json";
 const JSON_POKEMON_ITEM_PATH = "./src/json/pokemonItem.json";
 const JSON_POKEMON_NATURE_PATH = "./src/json/pokemonNature.json";
 
-let DEBUG_FLAG = false;
+let DEBUG_FLAG = true;
 
 export const Access = () => {
   let allDexInfo: PokemonAPIObject[] = [];
@@ -621,7 +622,7 @@ export const Access = () => {
         
           moveFormat.move.name = values.move.name;
           moveFormat.move.url = values.move.url;
-        
+
           let learnList = values.version_group_details.filter((val:any) => {
             let versionGroup: PokemonVersionGroupName = val.version_group.name;
             return versionGroup === "scarlet-violet";
@@ -633,30 +634,67 @@ export const Access = () => {
         
         })).then(async (res) => {
           if(res.length === 0) return res;
-        
+
           res.forEach((values:any) => {
             // 覚えるわざがない場合はスキップ
             if(values === false) return;
         
             let version_group_details = values.version_group_details;
-            format.moves.push({
+
+            let push_data = {
               move: {
                 name: values.move.name,
                 url: values.move.url
               },
-              version_group_details: version_group_details
+              version_group_details: values.version_group_details,
+            };
+            format.moves.push(push_data);
+          });
+
+          const learnMethodOrder = {
+            'level-up': 1,
+            'machine': 2,
+            'tutor': 3,
+            'egg': 4
+          };
+          
+          // 習得方法順を先にソート
+          format.moves.forEach((values) => {
+            values.version_group_details.sort((a,b) => {
+              let a_learn:PokemonDataMoveLearnName = a.move_learn_method.name;
+              let b_learn:PokemonDataMoveLearnName = b.move_learn_method.name;
+              return learnMethodOrder[a_learn] - learnMethodOrder[b_learn];
             });
           });
+
+          // MoveID 昇順
+          format.moves.sort((a,b) => {
+            // Move ID 昇順
+            if(parseInt(a.move.url.split("/")[6]) !== parseInt(b.move.url.split("/")[6])) {
+              return parseInt(a.move.url.split("/")[6]) - parseInt(b.move.url.split("/")[6]);
+            }
+            return 0;
+          });
+
+          // データ確認
+          format.moves.forEach((values) => {
+            let moveID = parseInt(values.move.url.split("/")[6]);
+            let moveName = values.move.name;
+
+            values.version_group_details.forEach((val) => {
+              let level = val.level_learned_at;
+              let version = val.version_group.name;
+              let move_learn_method = val.move_learn_method.name;
+              console.log(`MoveID: ${moveID} , MoveName: ${moveName} , Level: ${level} , Version: ${version} , LearnMethod: ${move_learn_method}`);
+            });
+          });
+
         }).catch((error) => {
           console.error("Error processing moves:", error);
         });
 
         Promise.all([types_promise , ability_promise , status_promise , moves_promise]).then(async (res) => {
-          // console.log(data.nationalDexAPI);
-          // console.log(parseInt(format.moves[0].move.url.split("/")[6]));
-          // console.log(parseInt(format.moves[0].version_group_details[0].level_learned_at));
-          // console.log(format.moves[0].version_group_details[0].version_group.name);
-
+          let _nationalDexAPI = data.nationalDexAPI as number;
           let _type1 = format.type1 as number;
           let _type2 = format.type2 as number;
           let _ability1 = format.ability1 as number;
@@ -678,7 +716,7 @@ export const Access = () => {
           // 挿入
           try {
             const data: any = {
-              basenationalDexAPI: 1,
+              basenationalDexAPI: _dexinfo?.nationalDexAPI,
               type1: _type1,
               type2: _type2,
               ability1: _ability1,
@@ -714,30 +752,36 @@ export const Access = () => {
           } finally {
             await prisma.$disconnect();
           }
-          
-          
-          // 後でわざリストを挿入する
-          // await prisma.moveLearnList.createMany({
-          //   data: {
-          //     nationalDexAPI: data.nationalDexAPI,
-          //     moveID: parseInt(format.moves[0].move.url.split("/")[6]),
-          //     moveLevel: parseInt(format.moves[0].version_group_details[0].level_learned_at),
-          //     moveVersion: format.moves[0].version_group_details[0].version_group.name,
-          //   }
-          // });
+        
+          try {
+            let moveInputs:any = [];
+            // 昇順で更新しているため 0番目のみでOK
+            format.moves.forEach(async (values) => {
+              const moveData = {
+                movenationalDexAPI: _dexinfo?.nationalDexAPI,
+                moveID: parseInt(values.move.url.split("/")[6]),
+                moveLevel: values.version_group_details[0].level_learned_at,
+                moveVersion: values.version_group_details[0].version_group.name,
+              };
 
+              moveInputs.push(moveData);
+            });
+
+            await prisma.moveLearnList.createMany({
+              data: moveInputs,
+            });
+
+          } catch (error) {
+            console.error("Error creating moveLearnList:", error);
+          } finally {
+            await prisma.$disconnect();
+          }
           console.log("--- Fin ---");
-        });
+        }); // Promise.all
+      } // 1匹だけ挿入する
 
-      }
-
-      // insert_base.push(format);
     });
     console.log("--- BaseInfo Inserted ---");
-    // let insert_base:any[] = [];
-    // allPokemonInfo.forEach((data:any) => {
-      
-    // });
   };
 
   //* Main Process
@@ -754,8 +798,13 @@ export const Access = () => {
     ];
 
     // 上記処理してからBaseInfoを挿入する
-    Promise.all(promises).then(() => {
+    Promise.all(promises).then(async () => {
       console.log(``);
+
+      if(DEBUG_FLAG) {
+        await prisma.baseInfo.deleteMany({});
+        await prisma.moveLearnList.deleteMany({});
+      }
       InsertPokemonBaseInfoDB();
     });
   });
