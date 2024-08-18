@@ -15,6 +15,8 @@ const JSON_POKEMON_MOVE_PATH = "./src/json/pokemonMove.json";
 const JSON_POKEMON_ABILITY_PATH = "./src/json/pokemonAbility.json";
 const JSON_POKEMON_ITEM_PATH = "./src/json/pokemonItem.json";
 const JSON_POKEMON_NATURE_PATH = "./src/json/pokemonNature.json";
+const JSON_POKEMON_FORMS_JA_PATH  = "./src/json/pokemonFormsJapaneseName.json";
+const JSON_POKEMON_FORMS_JA_EDIT_PATH = "./src/json/pokemonFormsJapaneseName_edit.json";
 
 let DEBUG_FLAG = true;
 
@@ -211,6 +213,90 @@ export const Access = () => {
       console.log(allPokemonInfo);
     }
     console.log("--- PokemonList Fin ---");
+
+    //! TEST FORM
+    {
+      let allPokemonForms_Jan:any[] = [];
+      let allPokemonForms_Jan_Edit:any[] = [];
+      // 日本語名の備考ファイルあり
+      if(fs.existsSync(JSON_POKEMON_FORMS_JA_PATH)){
+        // 変数名流用したいので {} をつける
+        {
+          const fileContent = fs.readFileSync(JSON_POKEMON_FORMS_JA_PATH , 'utf-8');
+          const json: Object[] = JSON.parse(fileContent);
+          allPokemonForms_Jan = json;
+        }
+        {
+          const fileContent = fs.readFileSync(JSON_POKEMON_FORMS_JA_EDIT_PATH , 'utf-8');
+          const json: Object[] = JSON.parse(fileContent);
+          allPokemonForms_Jan_Edit = json;
+
+          // 空文字の修正やつのみデータ置き換え
+          
+        }
+      } else {
+        const results = await Promise.all(
+          allPokemonInfo.map(async (data:any) => {
+            let forms = data["forms"];
+            let MasterID = data["id"];
+            // forms の数だけAPIを叩く
+            const res = await forms.map(async (val:any) => {
+              const url = val.url;
+              const json_res = await fetch(url).then((resPromise) => {
+                const json = resPromise.json();
+                return json;
+              });
+              return Promise.resolve(json_res);
+            });
+
+            // 日本語名を取得
+            return Promise.all(res).then((forms_data:any) => {
+              // 同期処理 のため forEach
+              forms_data.forEach((val:any) => {
+                if(val.form_names.length === 0) return false;
+                const id = val.id;
+                const form_names = val.form_names;
+                let nameJA = "";
+                let nameJA_Hrkt = "";
+                // 見つかる 前提
+                let is_form_name = true;
+                form_names.forEach((val:any) => {
+                  switch(val.language.name) {
+                    case "ja":
+                      nameJA = val.name;
+                      break;
+                    case "ja-Hrkt":
+                      nameJA_Hrkt = val.name;
+                      break;
+                  }
+                });
+
+
+                //! 日本語名がない場合は指定する
+                if(nameJA === "" && nameJA_Hrkt === "") {
+                  is_form_name = false;
+                }
+
+                // 未作成
+                let format = {
+                  id: MasterID,
+                  form_id: id,
+                  nameJA: nameJA === "" ? nameJA_Hrkt : "",
+                  url: `https://pokeapi.co/api/v2/pokemon-form/${id}/`
+                };
+                allPokemonForms_Jan.push(format);
+                if(!is_form_name)  allPokemonForms_Jan_Edit.push(format);
+              });
+            }); // lang get promise end
+
+
+          }) // 1 await End
+        ).then(() => {
+          fs.writeFileSync(JSON_POKEMON_FORMS_JA_PATH, JSON.stringify(allPokemonForms_Jan, null, 2));
+          fs.writeFileSync(JSON_POKEMON_FORMS_JA_EDIT_PATH, JSON.stringify(allPokemonForms_Jan_Edit, null, 2));
+        }); // main Promise End
+      } // else End
+    }
 
     let SpecInfo:Object[] = [];
     // getParam: names.language.name , names.name
