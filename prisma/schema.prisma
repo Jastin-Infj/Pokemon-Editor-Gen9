@@ -79,7 +79,7 @@ model BaseInfo {
   moveInfo         MoveLearnList[]
 
   // データベースとして保存されるが createはで使わない(null が入る)
-  f_nationalDexAPI Int @unique // 検索用
+  f_nationalDexAPI Int? @unique // 検索用
 }
 
 // model BaseInfo {

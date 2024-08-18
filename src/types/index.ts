@@ -105,3 +105,19 @@ export interface DataBaseStat {
     url: string
   }
 }
+
+export interface RequestPokemonData {
+  id: number,
+  move1: number,
+  move2: number,
+  move3: number,
+  move4: number,
+  ability: number,
+  item: number,
+  natureCurrent: number,
+  teraTypeCurrent: number,
+  // optional
+  abilityNum?: number,
+  natureBase?: number,
+  teraTypeBase?: number
+};

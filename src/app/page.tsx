@@ -1,31 +1,19 @@
 "use server";
+import { use, useEffect, useState } from "react";
 import { PBaseProps } from "@/types";
-import P_base from "./components/p_base";
 import MyDropzone from "./components/dropzone";
-import OfficalBase from "./components/officalBase";
-import Pokeapi from "./components/Pokeapi";
+import P_baseList from "./components/p_baseList";
 import Access from "./components/access";
 
 export default async function Home() {
-  const testPBase: PBaseProps = {
-    id: "001",
-    name: "ピカチュウ",
-    move1: "10まんボルト",
-    move2: "アイアンテール",
-    move3: "でんこうせっか",
-    move4: "ボルテッカー",
-    ability: "せいでんき",
-    item: "でんきだま",
-    nature: "ようき",
-    teratype: "でんき",
-    level: 50
-  };
+  // const [P_datas, setP_datas] = useState<PBaseProps[]>([]);
+  // const [API_data , setAPI_data] = useState<boolean>(false);1
 
   return (
     <>
         <header>
+          {/* <MyDropzone pbase_list={P_datas} set_pbase_list={setP_datas} /> */}
           <Access />
-          <Pokeapi />
           <MyDropzone />
         </header>
         <main>
@@ -48,7 +36,7 @@ export default async function Home() {
               </tr>
             </thead>
             <tbody>
-              <P_base {...testPBase} />
+              <P_baseList />
             </tbody>
           </table>
         </main>
