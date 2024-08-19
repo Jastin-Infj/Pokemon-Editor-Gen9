@@ -20,7 +20,7 @@ const JSON_POKEMON_FORMS_JA_EDIT_PATH = "./src/json/pokemonFormsJapaneseName_edi
 
 let DEBUG_FLAG = false;
 
-const Access = () => {
+const Access = async () => {
   let allDexInfo: PokemonAPIObject[] = [];
   let allPokemonInfo: Object[] = [];
   let allSpecInfo: Object[] = [];
@@ -929,11 +929,7 @@ const Access = () => {
     });
   });
 
-  return (
-    <>
-      <h1>Access</h1>
-    </>
-  )
+  return;
 };
 
 export default Access;

@@ -1,19 +1,23 @@
-"use server";
+"use client";
 import { use, useEffect, useState } from "react";
 import { PBaseProps } from "@/types";
 import MyDropzone from "./components/dropzone";
 import P_baseList from "./components/p_baseList";
 import Access from "./components/access";
 
-export default async function Home() {
+const Home = () => {
   // const [P_datas, setP_datas] = useState<PBaseProps[]>([]);
   // const [API_data , setAPI_data] = useState<boolean>(false);1
+
+  useEffect(() => {
+    Access();
+  }, []);
 
   return (
     <>
         <header>
           {/* <MyDropzone pbase_list={P_datas} set_pbase_list={setP_datas} /> */}
-          <Access />
+          {/* <Access /> */}
           <MyDropzone />
         </header>
         <main>
@@ -43,3 +47,5 @@ export default async function Home() {
     </>
   );
 };
+
+export default Home;
