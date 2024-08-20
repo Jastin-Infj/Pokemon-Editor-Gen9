@@ -1,16 +1,25 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { cache, useEffect, useReducer, useState } from "react";
 import { PBaseProps } from "@/types";
 import MyDropzone from "./components/dropzone";
 import P_baseList from "./components/p_baseList";
 import Access from "./components/access";
+import { reducer_P_Datas } from "./components/reducer";
+
+const initFetchData = cache(async () => {
+  const res = await Access();
+  return res;
+});
 
 const Home = () => {
-  // const [P_datas, setP_datas] = useState<PBaseProps[]>([]);
-  // const [API_data , setAPI_data] = useState<boolean>(false);1
+  const [P_datas, dispatch] = useReducer(reducer_P_Datas, [])
+  const [API_data , setAPI_data] = useState<boolean>(false);
 
   useEffect(() => {
-    Access();
+    if(API_data) return;
+    initFetchData().then((res) => {
+      if(res === 200) setAPI_data(true);
+    });
   }, []);
 
   return (
@@ -18,8 +27,12 @@ const Home = () => {
         <header>
           {/* <MyDropzone pbase_list={P_datas} set_pbase_list={setP_datas} /> */}
           {/* <Access /> */}
-          <MyDropzone />
+          <MyDropzone P_datasmethod={dispatch} />
         </header>
+        <div className="my-5">
+          <h1>{API_data ? "Fin" : "loading..."}</h1>
+          <h1>{P_datas.length}</h1>
+        </div>
         <main>
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
@@ -40,7 +53,7 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              <P_baseList />
+              <P_baseList P_datas={P_datas} />
             </tbody>
           </table>
         </main>

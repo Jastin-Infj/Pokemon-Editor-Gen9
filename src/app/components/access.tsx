@@ -6,6 +6,7 @@ import { DataAbility, DataBaseStat , DataMoveObject, DataType, PokemonAPIObject,
 import fs from 'fs';
 import { Prisma } from "@prisma/client";
 import { SetStateAction } from "react";
+import { HttpStatusCode } from "axios";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
@@ -905,8 +906,8 @@ const Access = async () => {
 
   
   //* Main Process
-  let promise_fetchPokemonAPI = FetchPokeAPI();
-  Promise.all([promise_fetchPokemonAPI]).then(() => {
+  let promise_fetchPokemonAPI = await FetchPokeAPI();
+  return Promise.all([promise_fetchPokemonAPI]).then(() => {
     console.log(``);
     let promises = [
       InsertPokemonDexInfoDB(),
@@ -918,18 +919,17 @@ const Access = async () => {
     ];
 
     // 上記処理してからBaseInfoを挿入する
-    Promise.all(promises).then(async () => {
+    return Promise.all(promises).then(async () => {
       console.log(``);
 
       if(DEBUG_FLAG) {
         await prisma.baseInfo.deleteMany({});
         await prisma.moveLearnList.deleteMany({});
       }
-      InsertPokemonBaseInfoDB();
+      await InsertPokemonBaseInfoDB();
+      return HttpStatusCode.Ok;
     });
   });
-
-  return;
 };
 
 export default Access;

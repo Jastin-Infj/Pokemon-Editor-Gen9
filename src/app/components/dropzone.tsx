@@ -2,21 +2,24 @@
 import { PBaseProps, RequestPokemonData } from '@/types';
 import React, {useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
+import { reducer_RequestPokemonData } from './reducer';
 
 interface Props {
-  pbase_list: PBaseProps[],
-  set_pbase_list: React.Dispatch<React.SetStateAction<PBaseProps[]>>
+  P_datasmethod: React.Dispatch<any>
 }
 
-const MyDropzone = () => {
+const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
   const [hexStrings , setHexStrings ] = useState<string[]>([]);
   const [pokemonData , setPokemonData] = useState<RequestPokemonData | null>(null);
   const inputRef = useRef(null);
 
   const onDrop = (acceptedFiles: File[]) => {
+    console.log("onDrop called");
+
     const file = acceptedFiles[0];
     const reader = new FileReader();
     reader.onload = (event) => {
+      console.log("File Reader onload called");
       const binaryString = event.target?.result as ArrayBuffer;
       if (binaryString) {
          const newHexString = Array.from(new Uint8Array(binaryString)).map(byte => byte.toString(16).padStart(2, '0')).join('');
@@ -123,6 +126,12 @@ const MyDropzone = () => {
         };
         setPokemonData(request);
 
+        //! Error point
+        let result = reducer_RequestPokemonData(request , {type: "ADD"});
+        Promise.all([result]).then((res) => {
+          console.log(res);
+        });
+
         const newPBase: PBaseProps = {
           id: "001",
           name: "ポケモン",
@@ -135,11 +144,11 @@ const MyDropzone = () => {
           nature: "せいかく",
           teratype: "テラスタル",
         };
-        // set_pbase_list([...pbase_list, newPBase]);
+        P_datasmethod({type: "ADD", payload: newPBase});
 
       } // if (binaryString)
     }
-
+    //! Promise が待てない？？
     reader.readAsArrayBuffer(file);
   }
 

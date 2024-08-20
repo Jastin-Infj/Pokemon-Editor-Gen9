@@ -5,15 +5,15 @@ import P_base from './p_base';
 import { PBaseProps } from '@/types';
 
 interface Props {
-  pbase_list: PBaseProps[]
+  P_datas: PBaseProps[]
 }
 
-const P_baseList = () => {
+const P_baseList:React.FC<Props> = ({P_datas}) => {
   return (
     <>
-      {/* {pbase_list?.map((data , index) => (
+      {P_datas?.map((data , index) => (
         <P_base key={index} {...data} />
-      ))} */}
+      ))}
     </>
   );
 };
