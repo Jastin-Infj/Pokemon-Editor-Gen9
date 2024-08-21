@@ -1,6 +1,6 @@
 "use client";
 import { PBaseProps, RequestPokemonData } from '@/types';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import { reducer_RequestPokemonData } from './reducer';
 
@@ -11,7 +11,18 @@ interface Props {
 const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
   const [hexStrings , setHexStrings ] = useState<string[]>([]);
   const [pokemonData , setPokemonData] = useState<RequestPokemonData | null>(null);
+  const [fetchData , setFetchData] = useState<any>(null);
   const inputRef = useRef(null);
+
+  // pokemonData が変更されたら、fetchData を実行
+  useEffect(() => {
+    if(!pokemonData) return;
+    console.log("useEffect called");
+    (async () => {
+      const res = await reducer_RequestPokemonData(pokemonData , {type: "ADD"});
+      setFetchData(res);
+    })();
+  },[pokemonData]);
 
   const onDrop = (acceptedFiles: File[]) => {
     console.log("onDrop called");
@@ -125,12 +136,6 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
           teraTypeCurrent: f_teraTypeCurrent,
         };
         setPokemonData(request);
-
-        //! Error point
-        let result = reducer_RequestPokemonData(request , {type: "ADD"});
-        Promise.all([result]).then((res) => {
-          console.log(res);
-        });
 
         const newPBase: PBaseProps = {
           id: "001",

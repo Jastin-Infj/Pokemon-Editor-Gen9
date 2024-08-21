@@ -1,5 +1,6 @@
 import { PBaseProps, RequestPokemonData } from "@/types";
 import prisma from "@/lib/prisma";
+import axios from "axios";
 
 function reducer_P_Datas(valueData: PBaseProps[], action: any) {
   switch(action.type) {
@@ -40,8 +41,10 @@ async function reducer_RequestPokemonData(requestData: RequestPokemonData , acti
 
   switch(action.type) {
     case "ADD":
-      console.log("--- test ---");
-      return reducer_DBRequest(requestData , {type: "GET_DEX"});
+      res = await reducer_DBRequest(requestData , {type: "GET_DEX"});
+      Promise.all([res]).then((res_data) => {
+        return Promise.resolve(res_data);
+      });
     case "UPDATE":
       return {
         ...requestData,
@@ -56,16 +59,17 @@ async function reducer_DBRequest(requestData: RequestPokemonData , action:any) {
   let res;
   switch(action.type) {
     case "GET_DEX":
-      res = await prisma.dexInfo.findMany({
-        where: {
-          id: requestData.id
-        }
-      });
-      return res;
+      try {
+        await axios.post('/api', {id: requestData.id}).then((res) => {
+          console.log(res);
+        });
+      } catch (error) {
+        return Promise.reject(new Error("Internal Server Error"));
+      }
+      break;
     default:
       break;
   }
-  return Promise.resolve(null);
 };
 
 export { reducer_P_Datas, reducer_RequestPokemonData, reducer_DBRequest };
