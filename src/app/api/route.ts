@@ -1,15 +1,18 @@
 import prisma from "@/lib/prisma";
-import { NextApiRequest , NextApiResponse } from "next";
+import { NextApiRequest } from "next";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextApiRequest , res: NextApiResponse) {
+export async function GET(req: NextApiRequest) {
+  let url = new URL(String(req.url));
+  const id = url.searchParams.get("id") as string;
   try {
-    const dexInfo = await prisma.dexInfo.findMany({
+    const dexInfo = await prisma.dexInfo.findFirst({
       where: {
-        id: 1
+        nationalDexAPI: parseInt(id)
       }
     });
-    res.status(200).json(dexInfo);
+    return NextResponse.json(dexInfo);
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return NextResponse.json({error: error});
   }
 }

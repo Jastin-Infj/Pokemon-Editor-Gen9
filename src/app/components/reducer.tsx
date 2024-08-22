@@ -1,6 +1,6 @@
 import { PBaseProps, RequestPokemonData } from "@/types";
 import prisma from "@/lib/prisma";
-import axios from "axios";
+import axios from 'axios';
 
 function reducer_P_Datas(valueData: PBaseProps[], action: any) {
   switch(action.type) {
@@ -25,26 +25,14 @@ function reducer_P_Datas(valueData: PBaseProps[], action: any) {
 }
 
 async function reducer_RequestPokemonData(requestData: RequestPokemonData , action:any) {
-  let createFormat: PBaseProps = {
-    id: "001",
-    name: "ポケモン",
-    move1: "わざ1",
-    move2: "わざ2",
-    move3: "わざ3",
-    move4: "わざ4",
-    ability: "とくせい",
-    item: "アイテム",
-    nature: "せいかく",
-    teratype: "テラスタル",
-  };
   let res;
-
   switch(action.type) {
     case "ADD":
       res = await reducer_DBRequest(requestData , {type: "GET_DEX"});
-      Promise.all([res]).then((res_data) => {
-        return Promise.resolve(res_data);
+      return Promise.all([res]).then((res_data) => {
+        return res_data[0];
       });
+      break;
     case "UPDATE":
       return {
         ...requestData,
@@ -57,16 +45,18 @@ async function reducer_RequestPokemonData(requestData: RequestPokemonData , acti
 
 async function reducer_DBRequest(requestData: RequestPokemonData , action:any) {
   let res;
+  let param = {
+    id: requestData.id
+  };
+
   switch(action.type) {
     case "GET_DEX":
       try {
-        await axios.post('/api', {id: requestData.id}).then((res) => {
-          console.log(res);
-        });
+        res = await axios.get('/api', { params: param });
+        return res.data;
       } catch (error) {
-        return Promise.reject(new Error("Internal Server Error"));
+        return {error: error};
       }
-      break;
     default:
       break;
   }
