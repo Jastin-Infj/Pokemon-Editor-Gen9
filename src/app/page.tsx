@@ -1,33 +1,38 @@
-"use server";
+"use client";
+import { cache, useEffect, useReducer, useState } from "react";
 import { PBaseProps } from "@/types";
-import P_base from "./components/p_base";
 import MyDropzone from "./components/dropzone";
-import OfficalBase from "./components/officalBase";
-import Pokeapi from "./components/Pokeapi";
+import P_baseList from "./components/p_baseList";
 import Access from "./components/access";
+import { reducer_P_Datas } from "./components/reducer";
 
-export default async function Home() {
-  const testPBase: PBaseProps = {
-    id: "001",
-    name: "ピカチュウ",
-    move1: "10まんボルト",
-    move2: "アイアンテール",
-    move3: "でんこうせっか",
-    move4: "ボルテッカー",
-    ability: "せいでんき",
-    item: "でんきだま",
-    nature: "ようき",
-    teratype: "でんき",
-    level: 50
-  };
+const initFetchData = cache(async () => {
+  const res = await Access();
+  return res;
+});
+
+const Home = () => {
+  const [P_datas, dispatch] = useReducer(reducer_P_Datas, [])
+  const [API_data , setAPI_data] = useState<boolean>(false);
+
+  useEffect(() => {
+    if(API_data) return;
+    initFetchData().then((res) => {
+      if(res === 200) setAPI_data(true);
+    });
+  }, []);
 
   return (
     <>
         <header>
-          <Access />
-          <Pokeapi />
-          <MyDropzone />
+          {/* <MyDropzone pbase_list={P_datas} set_pbase_list={setP_datas} /> */}
+          {/* <Access /> */}
+          <MyDropzone P_datasmethod={dispatch} />
         </header>
+        <div className="my-5">
+          <h1>{API_data ? "Fin" : "loading..."}</h1>
+          <h1>{P_datas.length}</h1>
+        </div>
         <main>
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
@@ -48,10 +53,12 @@ export default async function Home() {
               </tr>
             </thead>
             <tbody>
-              <P_base {...testPBase} />
+              <P_baseList P_datas={P_datas} />
             </tbody>
           </table>
         </main>
     </>
   );
 };
+
+export default Home;

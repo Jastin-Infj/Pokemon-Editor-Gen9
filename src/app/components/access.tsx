@@ -5,7 +5,8 @@ import { DataAbility, DataBaseStat , DataMoveObject, DataType, PokemonAPIObject,
 
 import fs from 'fs';
 import { Prisma } from "@prisma/client";
-import { deleteAppClientCache } from "next/dist/server/lib/render-server";
+import { SetStateAction } from "react";
+import { HttpStatusCode } from "axios";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
@@ -18,9 +19,9 @@ const JSON_POKEMON_NATURE_PATH = "./src/json/pokemonNature.json";
 const JSON_POKEMON_FORMS_JA_PATH  = "./src/json/pokemonFormsJapaneseName.json";
 const JSON_POKEMON_FORMS_JA_EDIT_PATH = "./src/json/pokemonFormsJapaneseName_edit.json";
 
-let DEBUG_FLAG = true;
+let DEBUG_FLAG = false;
 
-export const Access = () => {
+const Access = async () => {
   let allDexInfo: PokemonAPIObject[] = [];
   let allPokemonInfo: Object[] = [];
   let allSpecInfo: Object[] = [];
@@ -231,9 +232,9 @@ export const Access = () => {
           const json: Object[] = JSON.parse(fileContent);
           allPokemonForms_Jan_Edit = json;
 
-          // 空文字の修正やつのみデータ置き換え
-          
+          //todo 空文字の修正やつのみデータ置き換え
         }
+        console.log("--- PokemonDexLangage Fin ---");
       } else {
         const results = await Promise.all(
           allPokemonInfo.map(async (data:any) => {
@@ -271,21 +272,17 @@ export const Access = () => {
                   }
                 });
 
-
                 //! 日本語名がない場合は指定する
-                if(nameJA === "" && nameJA_Hrkt === "") {
-                  is_form_name = false;
-                }
+                if(nameJA === "" && nameJA_Hrkt === "") is_form_name = false;
 
-                // 未作成
-                let format = {
+                let output_format = {
                   id: MasterID,
                   form_id: id,
                   nameJA: nameJA === "" ? nameJA_Hrkt : "",
                   url: `https://pokeapi.co/api/v2/pokemon-form/${id}/`
                 };
-                allPokemonForms_Jan.push(format);
-                if(!is_form_name)  allPokemonForms_Jan_Edit.push(format);
+                allPokemonForms_Jan.push(output_format);
+                if(!is_form_name)  allPokemonForms_Jan_Edit.push(output_format);
               });
             }); // lang get promise end
 
@@ -294,6 +291,7 @@ export const Access = () => {
         ).then(() => {
           fs.writeFileSync(JSON_POKEMON_FORMS_JA_PATH, JSON.stringify(allPokemonForms_Jan, null, 2));
           fs.writeFileSync(JSON_POKEMON_FORMS_JA_EDIT_PATH, JSON.stringify(allPokemonForms_Jan_Edit, null, 2));
+          console.log("--- PokemonDexLangage Fin ---");
         }); // main Promise End
       } // else End
     }
@@ -908,8 +906,8 @@ export const Access = () => {
 
   
   //* Main Process
-  let promise_fetchPokemonAPI = FetchPokeAPI();
-  Promise.all([promise_fetchPokemonAPI]).then(() => {
+  let promise_fetchPokemonAPI = await FetchPokeAPI();
+  return Promise.all([promise_fetchPokemonAPI]).then(() => {
     console.log(``);
     let promises = [
       InsertPokemonDexInfoDB(),
@@ -921,20 +919,17 @@ export const Access = () => {
     ];
 
     // 上記処理してからBaseInfoを挿入する
-    Promise.all(promises).then(async () => {
+    return Promise.all(promises).then(async () => {
       console.log(``);
 
       if(DEBUG_FLAG) {
         await prisma.baseInfo.deleteMany({});
         await prisma.moveLearnList.deleteMany({});
       }
-      InsertPokemonBaseInfoDB();
+      await InsertPokemonBaseInfoDB();
+      return HttpStatusCode.Ok;
     });
   });
-
-  return (
-    <button>test</button>
-  );
 };
 
 export default Access;
