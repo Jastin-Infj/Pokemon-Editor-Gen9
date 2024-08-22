@@ -888,9 +888,9 @@ const Access = async () => {
       const NORMAL_LIMIT = 1025;
       
       // IDの指定可能
-      // if(dexNum >= 1 && dexNum <= NORMAL_LIMIT) {
-      //   await InsertPokemonDataFormatCreate_Main(dexNum);
-      // }
+      if(id <= NORMAL_LIMIT) {
+        await InsertPokemonDataFormatCreate_Main(id);
+      }
 
       if(id > NORMAL_LIMIT){
         await InsertPokemonDataFormatCreate_Main(id);

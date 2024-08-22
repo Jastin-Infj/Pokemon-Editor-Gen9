@@ -26,12 +26,15 @@ function reducer_P_Datas(valueData: PBaseProps[], action: any) {
 
 async function reducer_RequestPokemonData(requestData: RequestPokemonData , action:any) {
   let res;
+  let res_specinfo;
+
+  let db_nationalDexAPI;
   switch(action.type) {
     case "ADD":
       res = await reducer_DBRequest(requestData , {type: "GET_DEX"});
-      return Promise.all([res]).then((res_data) => {
-        return res_data[0];
-      });
+      db_nationalDexAPI = res.nationalDexAPI;
+      res_specinfo = await reducer_DBRequest(db_nationalDexAPI , {type: "GET_SPECINFO"});
+      return res_specinfo;
       break;
     case "UPDATE":
       return {
@@ -43,16 +46,29 @@ async function reducer_RequestPokemonData(requestData: RequestPokemonData , acti
   }
 };
 
-async function reducer_DBRequest(requestData: RequestPokemonData , action:any) {
+async function reducer_DBRequest(requestData: any , action:any) {
   let res;
-  let param = {
-    id: requestData.id
-  };
+  let param;
+  let nationalDexAPI;
 
   switch(action.type) {
     case "GET_DEX":
       try {
+        param = {
+          id: requestData.id
+        }
         res = await axios.get('/api', { params: param });
+        return res.data;
+      } catch (error) {
+        return {error: error};
+      }
+    case "GET_SPECINFO":
+      try {
+        nationalDexAPI = requestData;
+        param = {
+          basenationalDexAPI: nationalDexAPI 
+        }
+        res = await axios.get('/api/specinfo', { params: param });
         return res.data;
       } catch (error) {
         return {error: error};
