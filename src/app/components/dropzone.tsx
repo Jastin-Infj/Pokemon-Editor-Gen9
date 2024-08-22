@@ -22,6 +22,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
     const fetchData = async () => {
       const res = await reducer_RequestPokemonData(pokemonData , {type: "ADD"});
       setFetchData(res);
+      console.log(res);
     };
     fetchData();
   },[pokemonData]);
