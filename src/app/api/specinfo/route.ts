@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
 export async function GET(req: NextApiRequest) {  
@@ -11,7 +11,6 @@ export async function GET(req: NextApiRequest) {
         basenationalDexAPI: parseInt(basenationalDexAPI as string)
       }
     });
-    console.log(dexInfo);
     return NextResponse.json(dexInfo);
   } catch (error) {
     return NextResponse.json({error: error});

@@ -20,7 +20,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
     if(!pokemonData) return;
     console.log("useEffect called");
     const fetchData = async () => {
-      const res = await reducer_RequestPokemonData(pokemonData , {type: "ADD"});
+      const res = await reducer_RequestPokemonData({type: "ADD", payload: pokemonData});
       setFetchData(res);
       console.log(res);
     };
