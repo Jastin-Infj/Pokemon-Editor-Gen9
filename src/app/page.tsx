@@ -16,7 +16,6 @@ const Home = () => {
   const [API_data , setAPI_data] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('Home useEffect triggered');
     if(API_data) return;
     initFetchData().then((res) => {
       if(res === 200) setAPI_data(true);

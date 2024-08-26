@@ -13,7 +13,6 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
   const [hexStrings , setHexStrings ] = useState<string[]>([]);
   const [pokemonData , setPokemonData] = useState<RequestPokemonData | null>(null);
   const [fetchData , setFetchData] = useState<any>(null);
-  const inputRef = useRef(null);
 
   // pokemonData が変更されたら、fetchData を実行
   useEffect(() => {
@@ -23,6 +22,21 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
       const res = await reducer_RequestPokemonData({type: "ADD", payload: pokemonData});
       setFetchData(res);
       console.log(res);
+
+      //todo ここに結果を入れる
+      const newPBase: PBaseProps = {
+        id: "001",
+        name: "ポケモン",
+        move1: "わざ1",
+        move2: "わざ2",
+        move3: "わざ3",
+        move4: "わざ4",
+        ability: "とくせい",
+        item: "アイテム",
+        nature: "せいかく",
+        teratype: "テラスタル",
+      };
+      P_datasmethod({type: "ADD", payload: newPBase});
     };
     fetchData();
   },[pokemonData]);
@@ -140,20 +154,6 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
         };
         setPokemonData(request);
 
-        const newPBase: PBaseProps = {
-          id: "001",
-          name: "ポケモン",
-          move1: "わざ1",
-          move2: "わざ2",
-          move3: "わざ3",
-          move4: "わざ4",
-          ability: "とくせい",
-          item: "アイテム",
-          nature: "せいかく",
-          teratype: "テラスタル",
-        };
-        P_datasmethod({type: "ADD", payload: newPBase});
-
       } // if (binaryString)
     }
     //! Promise が待てない？？
@@ -165,7 +165,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
   return (
     <>
       <div {...getRootProps()} className='border my-20 h-[4rem] text-center'>
-        <input {...getInputProps()} ref={inputRef}/>
+        <input {...getInputProps()} />
         <p className='text-center translate-y-1/2'>ファイルをここにドロップするか、クリックして選択してください</p>
       </div>
       <ul>

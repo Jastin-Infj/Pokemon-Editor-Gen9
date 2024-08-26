@@ -30,7 +30,8 @@ interface ActionDispatch {
 }
 
 interface GetAction {
-  type: "GET_DEX" | "GET_SPECINFO" | "GET_TYPEINFO";
+  type: "GET_DEX" | "GET_SPECINFO" | "GET_TYPEINFO" | 
+  "GET_ITEMINFO" | "GET_ABILITYINFO" | "GET_NATUREINFO" | "GET_MOVEINFO";
 }
 
 interface Request_DEX {
@@ -46,10 +47,31 @@ interface Request_TYPEINFO {
   type2: number | null
 }
 
-type RequestData = Request_DEX | Request_SPECINFO | Request_TYPEINFO;
+interface Request_ITEMINFO {
+  itemid: number | null
+}
+
+interface Request_ABILITYINFO {
+  abilityidCurrent: number | null,
+}
+
+interface Request_NATUREINFO {
+  natureCurrent: number | null
+}
+
+interface Request_MOVEINFO {
+  move1id: number | null,
+  move2id: number | null,
+  move3id: number | null,
+  move4id: number | null
+}
+
+type RequestData = Request_DEX | Request_SPECINFO | Request_TYPEINFO | 
+Request_ITEMINFO | Request_ABILITYINFO | Request_NATUREINFO | Request_MOVEINFO;
 
 async function reducer_RequestPokemonData(action: ActionDispatch) {
   let requestData = action.payload;
+  console.log(requestData);
   let req_dex: Request_DEX = {
     id: requestData.id
   }
@@ -60,23 +82,58 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
     type1: null,
     type2: null
   }
+  let req_item: Request_ITEMINFO = {
+    itemid: null
+  }
+  let req_ability: Request_ABILITYINFO = {
+    abilityidCurrent: null
+  }
+  let req_nature: Request_NATUREINFO = {
+    natureCurrent: null
+  }
+  let req_move: Request_MOVEINFO = {
+    move1id: null,
+    move2id: null,
+    move3id: null,
+    move4id: null
+  }
 
   let res_dex;
   let res_specinfo;
   let res_typeinfo;
+  let res_iteminfo;
+  let res_abilityinfo;
+  let res_natureinfo;
+  let res_moveinfo;
 
   let db_nationalDexAPI;
   switch(action.type) {
     case "ADD":
       res_dex = await reducer_DBRequest({type: "GET_DEX"} , req_dex);
       req_spec.basenationalDexAPI = res_dex.nationalDexAPI;
-
+      
       res_specinfo = await reducer_DBRequest({type: "GET_SPECINFO"} , req_spec);
+      
       req_type.type1 = res_specinfo.type1;
       req_type.type2 = res_specinfo.type2;
-
       res_typeinfo = await reducer_DBRequest({type: "GET_TYPEINFO"} , req_type);
-      return res_typeinfo;
+      
+      req_item.itemid = requestData.item;
+      res_iteminfo = await reducer_DBRequest({type: "GET_ITEMINFO"} , req_item);
+      
+      req_ability.abilityidCurrent = requestData.ability;
+      res_abilityinfo = await reducer_DBRequest({type: "GET_ABILITYINFO"} , req_ability);
+
+      req_nature.natureCurrent = requestData.natureCurrent;
+      res_natureinfo = await reducer_DBRequest({type: "GET_NATUREINFO"} , req_nature);
+
+      req_move.move1id = requestData.move1;
+      req_move.move2id = requestData.move2;
+      req_move.move3id = requestData.move3;
+      req_move.move4id = requestData.move4;
+      res_moveinfo = await reducer_DBRequest({type: "GET_MOVEINFO"} , req_move);
+      return [res_dex, res_specinfo, res_typeinfo, res_iteminfo, res_abilityinfo, res_natureinfo, res_moveinfo];
+
       break;
     case "UPDATE":
       return {
@@ -113,6 +170,38 @@ async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
       try {
         req = requestData as Request_TYPEINFO;
         res = await axios.get('/api/typeinfo', { params: req });
+        return res.data;
+      } catch (error) {
+        return {error: error};
+      }
+    case "GET_ITEMINFO":
+      try {
+        req = requestData as Request_ITEMINFO;
+        res = await axios.get('/api/iteminfo', { params: req });
+        return res.data;
+      } catch (error) {
+        return {error: error};
+      }
+    case "GET_ABILITYINFO":
+      try {
+        req = requestData as Request_ABILITYINFO;
+        res = await axios.get('/api/abilityinfo', { params: req });
+        return res.data;
+      } catch (error) {
+        return {error: error};
+      }
+    case "GET_NATUREINFO":
+      try {
+        req = requestData as Request_NATUREINFO;
+        res = await axios.get('/api/natureinfo', { params: req });
+        return res.data;
+      } catch (error) {
+        return {error: error};
+      }
+    case "GET_MOVEINFO":
+      try {
+        req = requestData as Request_MOVEINFO;
+        res = await axios.get('/api/moveinfo', { params : req });
         return res.data;
       } catch (error) {
         return {error: error};
