@@ -1,12 +1,12 @@
 export interface PBaseProps {
-  id: string
+  id: string;
   name: string;
   move1: string;
   move2: string;
   move3: string;
   move4: string;
   ability: string;
-  item: string;
+  item: string | null;
   nature: string;
   teratype: string;
   level?: number;

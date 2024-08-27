@@ -31,7 +31,7 @@ interface ActionDispatch {
 
 interface GetAction {
   type: "GET_DEX" | "GET_SPECINFO" | "GET_TYPEINFO" | 
-  "GET_ITEMINFO" | "GET_ABILITYINFO" | "GET_NATUREINFO" | "GET_MOVEINFO";
+  "GET_ITEMINFO" | "GET_ABILITYINFO" | "GET_NATUREINFO" | "GET_MOVEINFO" | "GET_TERATYPEINFO";
 }
 
 interface Request_DEX {
@@ -66,8 +66,13 @@ interface Request_MOVEINFO {
   move4id: number | null
 }
 
+interface Request_TERATYPEINFO {
+  teraTypeCurrent: number | null
+}
+
 type RequestData = Request_DEX | Request_SPECINFO | Request_TYPEINFO | 
-Request_ITEMINFO | Request_ABILITYINFO | Request_NATUREINFO | Request_MOVEINFO;
+Request_ITEMINFO | Request_ABILITYINFO | Request_NATUREINFO | Request_MOVEINFO | 
+Request_TERATYPEINFO;
 
 async function reducer_RequestPokemonData(action: ActionDispatch) {
   let requestData = action.payload;
@@ -97,6 +102,9 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
     move3id: null,
     move4id: null
   }
+  let req_teratype: Request_TERATYPEINFO = {
+    teraTypeCurrent: null
+  }
 
   let res_dex;
   let res_specinfo;
@@ -105,6 +113,7 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
   let res_abilityinfo;
   let res_natureinfo;
   let res_moveinfo;
+  let res_teratypeinfo;
 
   let db_nationalDexAPI;
   switch(action.type) {
@@ -132,7 +141,10 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
       req_move.move3id = requestData.move3;
       req_move.move4id = requestData.move4;
       res_moveinfo = await reducer_DBRequest({type: "GET_MOVEINFO"} , req_move);
-      return [res_dex, res_specinfo, res_typeinfo, res_iteminfo, res_abilityinfo, res_natureinfo, res_moveinfo];
+
+      req_teratype.teraTypeCurrent = requestData.teraTypeCurrent;
+      res_teratypeinfo = await reducer_DBRequest({type: "GET_TERATYPEINFO"} , req_teratype);
+      return [res_dex, res_specinfo, res_typeinfo, res_iteminfo, res_abilityinfo, res_natureinfo, res_moveinfo , res_teratypeinfo];
 
       break;
     case "UPDATE":
@@ -202,6 +214,14 @@ async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
       try {
         req = requestData as Request_MOVEINFO;
         res = await axios.get('/api/moveinfo', { params : req });
+        return res.data;
+      } catch (error) {
+        return {error: error};
+      }
+    case "GET_TERATYPEINFO":
+      try {
+        req = requestData as Request_TERATYPEINFO;
+        res = await axios.get('/api/typeinfo', { params : req });
         return res.data;
       } catch (error) {
         return {error: error};

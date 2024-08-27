@@ -19,24 +19,36 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
     if(!pokemonData) return;
     console.log("useEffect called");
     const fetchData = async () => {
-      const res = await reducer_RequestPokemonData({type: "ADD", payload: pokemonData});
+      const res:any = await reducer_RequestPokemonData({type: "ADD", payload: pokemonData});
       setFetchData(res);
       console.log(res);
 
+      if(res.length === 0) return;
+      let res_dex = res[0];
+      let res_spec = res[1];
+      let res_type = res[2];
+      let res_item = res[3];
+      let res_ability = res[4];
+      let res_nature = res[5];
+      let res_move = res[6];
+      let res_teratype = res[7];
+
       //todo ここに結果を入れる
       const newPBase: PBaseProps = {
-        id: "001",
-        name: "ポケモン",
-        move1: "わざ1",
-        move2: "わざ2",
-        move3: "わざ3",
-        move4: "わざ4",
-        ability: "とくせい",
-        item: "アイテム",
-        nature: "せいかく",
-        teratype: "テラスタル",
+        id: String(res_dex.nationalDexAPI),
+        name: res_dex.nameJA,
+        move1: res_move[0].moveName,
+        move2: res_move[1].moveName,
+        move3: res_move[2].moveName,
+        move4: res_move[3].moveName,
+        ability: res_ability.abilityName,
+        item: res_item.itemName,
+        nature: res_nature.natureName,
+        teratype: res_teratype.typeName,
+        level: 50,
       };
       P_datasmethod({type: "ADD", payload: newPBase});
+      setFetchData(null);
     };
     fetchData();
   },[pokemonData]);
@@ -156,7 +168,6 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
 
       } // if (binaryString)
     }
-    //! Promise が待てない？？
     reader.readAsArrayBuffer(file);
   }
 
