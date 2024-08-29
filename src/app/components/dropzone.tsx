@@ -3,7 +3,6 @@ import { PBaseProps, RequestPokemonData } from '@/types';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import { reducer_RequestPokemonData } from './reducer';
-import axios from 'axios';
 
 interface Props {
   P_datasmethod: React.Dispatch<any>
@@ -33,7 +32,6 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
       let res_move = res[6];
       let res_teratype = res[7];
 
-      //todo ここに結果を入れる
       const newPBase: PBaseProps = {
         id: String(res_dex.nationalDexAPI),
         name: res_dex.nameJA,

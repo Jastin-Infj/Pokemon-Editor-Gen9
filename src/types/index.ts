@@ -121,3 +121,34 @@ export interface RequestPokemonData {
   natureBase?: number,
   teraTypeBase?: number
 };
+
+export interface RequestSavePokemonData {
+  column: number,
+  pokemonID: number
+  pokemonName: string,
+  move1: number,
+  move2: number,
+  move3: number,
+  move4: number,
+  ability: number,
+  item: number,
+  nature: number,
+  teraType: number,
+  level: number,
+  ivs: {
+    hp: number,
+    attack: number,
+    defense: number,
+    spattack: number,
+    spdefense: number,
+    speed: number
+  }
+  evs: {
+    hp: number,
+    attack: number,
+    defense: number,
+    spattack: number,
+    spdefense: number,
+    speed: number
+  }
+}
