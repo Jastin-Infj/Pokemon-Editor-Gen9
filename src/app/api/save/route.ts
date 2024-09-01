@@ -1,30 +1,53 @@
 import prisma from "@/lib/prisma";
 import { NextApiRequest } from "next";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { userInfo } from "os";
 
-export async function POST(req: NextApiRequest) {
-  const reqBody = req.body;
-  console.log(reqBody);
+export async function POST(req: NextRequest) {
+  const data = await req.json();
   try {
-    await prisma.userSaveData.create({
-      data: {
-        column: reqBody.column,
-        PokemonID: reqBody.pokemonID,
-        PokemonName: reqBody.pokemonName,
-        move1: reqBody.move1,
-        move2: reqBody.move2,
-        move3: reqBody.move3,
-        move4: reqBody.move4,
-        ability: reqBody.ability,
-        item: reqBody.item,
-        nature: reqBody.nature,
-        teratype: reqBody.teraType,
-        level: reqBody.level,
-        Ivs: reqBody.ivs,
-        Evs: reqBody.evs
-      }
-    });
-    await prisma.$disconnect();
+    if(data.userID) {
+      await prisma.userSaveData.create({
+        data: {
+          column: data.column,
+          PokemonID: data.pokemonID,
+          move1: data.move1,
+          move2: data.move2,
+          move3: data.move3,
+          move4: data.move4,
+          ability: data.ability,
+          item: data.item,
+          nature: data.nature,
+          teratype: data.teraType,
+          level: data.level,
+          Ivs: data.ivs,
+          Evs: data.evs,
+          userinfo: {
+            connect: {
+              userID: data.userID
+            }
+          }
+        }
+      });
+    } else {
+      await prisma.userSaveData.create({
+        data: {
+          column: data.column,
+          PokemonID: data.pokemonID,
+          move1: data.move1,
+          move2: data.move2,
+          move3: data.move3,
+          move4: data.move4,
+          ability: data.ability,
+          item: data.item,
+          nature: data.nature,
+          teratype: data.teraType,
+          level: data.level,
+          Ivs: data.ivs,
+          Evs: data.evs
+        }
+      });
+    }
     return NextResponse.json({status: "success"});
   } catch (error) {
     return NextResponse.json({error: error});

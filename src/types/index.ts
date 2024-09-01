@@ -136,5 +136,6 @@ export interface RequestSavePokemonData {
   teraType: number,
   level: number,
   ivs: string
-  evs: string
+  evs: string,
+  userID?: string
 }

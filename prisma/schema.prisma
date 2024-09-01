@@ -111,5 +111,5 @@ model UserSaveData {
   userinfo         UserLogin? @relation(fields: [f_userID], references: [userID])
 
   // 検索用
-  f_userID         String @unique // 検索用
+  f_userID         String? @unique // 検索用
 }

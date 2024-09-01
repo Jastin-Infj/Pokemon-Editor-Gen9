@@ -3,7 +3,9 @@ import prisma from "@/lib/prisma";
 import { RequestSavePokemonData } from "@/types";
 import { useEffect, useState } from "react";
 
-const Save = () => {
+
+
+const UserLogin = () => {
   // await で 非同期処理をするため
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
@@ -15,7 +17,7 @@ const Save = () => {
     if(!isClicked) return;
 
     const handleSave = async () => {
-      const param: RequestSavePokemonData = {
+      const req: RequestSavePokemonData = {
         column: 1,
         pokemonID: 1,
         pokemonName: "test",
@@ -29,39 +31,39 @@ const Save = () => {
         teraType: 1,
         level: 50,
         ivs: "31/31/31/31/31/31",
-        evs: "252/252/4/0/0/0",
-        userID: "test"
+        evs: "252/252/4/0/0/0"
+      };
+
+      const param = {
+        userID: "test",
+        userName: "test",
+        root: false
       };
 
       try {
-        const req = await fetch('/api/save', {
+        const req = await fetch('/api/user', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(param)
         });
-        const res = await req.json();
-        if(res.error.code === "P2002") {
-          console.log(new Error("Already data added"));
-        } else {
-          console.log(res);
-        }
-        setIsClicked(false);
-      } catch (err) {
-        console.log(err);
+        const success = await req.json();
+        console.log(success);
+      } catch (error) {
+        console.log(error);
       }
-    };
 
+      
+    };
     handleSave();
   }, [isClicked]);
-
+  
   return (
     <>
-      <button onClick={handleClick} className="bg-blue-400 text-white" >Save</button>
+      <button onClick={handleClick} className="bg-red-400  text-white rounded-sm">User Create</button>
     </>
   );
-
 }
 
-export default Save;
+export default UserLogin;
