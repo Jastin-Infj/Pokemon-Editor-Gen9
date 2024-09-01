@@ -135,20 +135,6 @@ export interface RequestSavePokemonData {
   nature: number,
   teraType: number,
   level: number,
-  ivs: {
-    hp: number,
-    attack: number,
-    defense: number,
-    spattack: number,
-    spdefense: number,
-    speed: number
-  }
-  evs: {
-    hp: number,
-    attack: number,
-    defense: number,
-    spattack: number,
-    spdefense: number,
-    speed: number
-  }
+  ivs: string
+  evs: string
 }

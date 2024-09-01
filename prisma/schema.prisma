@@ -83,7 +83,7 @@ model BaseInfo {
 }
 
 model UserLogin {
-  userID           String @unique
+  userID           String @id @unique
   userName         String
   root             Boolean?
   userSaveData     UserSaveData[]
