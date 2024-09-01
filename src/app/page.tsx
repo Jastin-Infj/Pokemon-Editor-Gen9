@@ -5,6 +5,8 @@ import MyDropzone from "./components/dropzone";
 import P_baseList from "./components/p_baseList";
 import Access from "./components/access";
 import { reducer_P_Datas } from "./components/reducer";
+import UserLogin from "./components/UserLogin";
+import Save from "./components/Save";
 
 const initFetchData = cache(async () => {
   const res = await Access();
@@ -34,6 +36,8 @@ const Home = () => {
           <h1>{P_datas.length}</h1>
         </div>
         <main>
+          <UserLogin />
+          <Save />
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
               <tr className="text-white">

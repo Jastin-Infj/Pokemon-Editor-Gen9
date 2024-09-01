@@ -82,25 +82,34 @@ model BaseInfo {
   f_nationalDexAPI Int? @unique // 検索用
 }
 
-// model BaseInfo {
-//   // 一意的なIDがprismaは必要
-//   id           Int @id @default(autoincrement())
-//   // One to Oneの関係
-//   dexInfo     DexInfo @relation(fields: [basenationalDexAPI], references: [nationalDexAPI])
-//   basenationalDexAPI Int @unique
+model UserLogin {
+  userID           String @id @unique
+  userName         String
+  root             Boolean?
+  userSaveData     UserSaveData[]
+}
 
-//   type1          Int
-//   type2          Int
-//   ability1       Int
-//   ability2       Int
-//   ability3       Int
-//   baseHP         Int
-//   baseAttack     Int
-//   baseDefense    Int
-//   baseSpAttack   Int
-//   baseSpDefense  Int
-//   baseSpeed      Int
+model UserSaveData {
+  id               Int    @id @default(autoincrement())
+  column           Int
 
-//   // // 多対多の関係
-//   // moves       MoveLearnList[]
-// }
+  PokemonID        Int
+  //視認性向上のためにポケモン名は保存
+  PokemonName      String?
+  move1            Int
+  move2            Int
+  move3            Int
+  move4            Int
+  ability          Int
+  item             Int
+  nature           Int
+  teratype         Int
+  level            Int
+  Ivs              String
+  Evs              String
+
+  userinfo         UserLogin? @relation(fields: [f_userID], references: [userID])
+
+  // 検索用
+  f_userID         String? @unique // 検索用
+}
