@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
-import { userInfo } from "os";
 
 export async function POST(req: NextRequest) {
   const data = await req.json();

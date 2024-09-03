@@ -44,6 +44,19 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
         nature: res_nature.natureName,
         teratype: res_teratype.typeName,
         level: 50,
+
+        // id
+        innerData: {
+          nationalDexAPI: res_dex.nationalDexAPI,
+          move1ID: res_move[0].moveID,
+          move2ID: res_move[1].moveID,
+          move3ID: res_move[2].moveID,
+          move4ID: res_move[3].moveID,
+          abliityID: res_ability.abilityID,
+          itemID: res_item.itemID,
+          natureID: res_nature.natureID,
+          teraTypeID: res_teratype.typeID,
+        }
       };
       P_datasmethod({type: "ADD", payload: newPBase});
       setFetchData(null);

@@ -37,7 +37,7 @@ const Home = () => {
         </div>
         <main>
           <UserLogin />
-          <Save />
+          <Save P_datas={P_datas} />
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
               <tr className="text-white">
