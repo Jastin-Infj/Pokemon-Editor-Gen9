@@ -1,3 +1,15 @@
+export interface PBaseProps_InnerData {
+  nationalDexAPI: number | null,
+  move1ID: number,
+  move2ID: number,
+  move3ID: number,
+  move4ID: number,
+  abliityID: number,
+  itemID: number,
+  natureID: number,
+  teraTypeID: number
+}
+
 export interface PBaseProps {
   id: string;
   name: string;
@@ -10,6 +22,9 @@ export interface PBaseProps {
   nature: string;
   teratype: string;
   level?: number;
+
+  // 内部データ
+  innerData: PBaseProps_InnerData;
 };
 
 export interface StyleProps {
