@@ -154,3 +154,9 @@ export interface RequestSavePokemonData {
   evs: string,
   userID?: string
 }
+
+export interface UserData {
+  userID: string,
+  userName: string,
+  root?: boolean
+}

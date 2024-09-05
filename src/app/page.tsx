@@ -7,14 +7,20 @@ import Access from "./components/access";
 import { reducer_P_Datas } from "./components/reducer";
 import UserLogin from "./components/UserLogin";
 import Save from "./components/Save";
+import Import from "./components/Import";
 
 const initFetchData = cache(async () => {
   const res = await Access();
   return res;
 });
 
+const importData = cache(async () => {
+  const res = await Import();
+  return res;
+});
+
 const Home = () => {
-  const [P_datas, dispatch] = useReducer(reducer_P_Datas, [])
+  const [P_datas, dispatch] = useReducer(reducer_P_Datas, []);
   const [API_data , setAPI_data] = useState<boolean>(false);
 
   useEffect(() => {
@@ -22,6 +28,15 @@ const Home = () => {
     initFetchData().then((res) => {
       if(res === 200) setAPI_data(true);
     });
+
+    //ｗ
+    importData().then((res) => {
+      console.log(res);
+
+      // TODO: 実際のデータを取得する
+
+    });
+    
   }, []);
 
   return (
