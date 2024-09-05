@@ -76,6 +76,7 @@ Request_TERATYPEINFO;
 
 async function reducer_RequestPokemonData(action: ActionDispatch) {
   let requestData = action.payload;
+  console.log("reducer_RequestPokemonData ↓↓↓");
   console.log(requestData);
   let req_dex: Request_DEX = {
     id: requestData.id

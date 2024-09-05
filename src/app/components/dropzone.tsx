@@ -18,6 +18,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
     if(!pokemonData) return;
     console.log("useEffect called");
     const fetchData = async () => {
+      // 内部データを参考に取得
       const res:any = await reducer_RequestPokemonData({type: "ADD", payload: pokemonData});
       setFetchData(res);
       console.log(res);
@@ -32,6 +33,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
       let res_move = res[6];
       let res_teratype = res[7];
 
+      // P_Base に格納するデータ
       const newPBase: PBaseProps = {
         id: String(res_dex.nationalDexAPI),
         name: res_dex.nameJA,

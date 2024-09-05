@@ -17,3 +17,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({error: error});
   }
 }
+
+export async function GET(req: NextApiRequest) {
+  const url = new URL(String(req.url));
+  const body = {
+    userID: url.searchParams.get("userID") as string,
+    userName: url.searchParams.get("userName") as string
+  };
+  try {
+    const user = await prisma.userLogin.findFirst({
+      where: {
+        userID: body.userID,
+        userName: body.userName
+      }
+    });
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.json({error: error});
+  }
+}
