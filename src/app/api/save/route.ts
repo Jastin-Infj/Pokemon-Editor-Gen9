@@ -52,3 +52,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({error: error});
   }
 }
+
+export async function GET(req: NextApiRequest) {
+  const url = new URL(String(req.url));
+  const userID = url.searchParams.get("userID") as string;
+  try {
+    const data = await prisma.userSaveData.findMany({
+      where: {
+        userinfo: {
+          userID: userID
+        }
+      }
+    });
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json({error: error});
+  }
+}

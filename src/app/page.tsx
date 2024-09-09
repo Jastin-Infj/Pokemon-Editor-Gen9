@@ -29,12 +29,9 @@ const Home = () => {
       if(res === 200) setAPI_data(true);
     });
 
-    //ｗ
     importData().then((res) => {
       console.log(res);
-
       // TODO: 実際のデータを取得する
-
     });
     
   }, []);
