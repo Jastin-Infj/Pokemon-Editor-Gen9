@@ -1,10 +1,9 @@
 "use server";
-import { UserData } from "@/types";
+import { RequestPokemonData, UserData } from "@/types";
 import { headers } from "next/headers";
+import React from "react";
+import { reducer_RequestPokemonData } from "./reducer";
 
-interface Props {
-  P_datasmethod: React.Dispatch<any>
-}
 
 interface ImportSaveData {
   f_userID: string,
@@ -27,13 +26,14 @@ interface ImportSaveData {
 
 const Import = async () => { 
   console.log("--- Import Start ---");
+  const headerList = headers();
+  const origin = headerList.get('host');
+  
   const FetchData = async () => {
     let param: UserData = {
       userID: "test",
       userName: "test"
     };
-    const headerList = headers();
-    const origin = headerList.get('host');
 
     try {
       const res = await fetch(`http://${origin}/api/user?userID=${param.userID}&userName=${param.userName}`, {
@@ -56,9 +56,31 @@ const Import = async () => {
     }
   };
 
+  const FetchPokemonData = async (datas: ImportSaveData[]) => {
+    datas.sort((a , b) => {
+      return a.column - b.column;
+    });
+
+    datas.forEach(async (data) => {
+      let format: RequestPokemonData = {
+        id: data.PokemonID,
+        move1: data.move1,
+        move2: data.move2,
+        move3: data.move3,
+        move4: data.move4,
+        ability: data.ability,
+        item: data.item,
+        natureCurrent: data.nature,
+        teraTypeCurrent: data.teratype
+      };
+      const res =  await reducer_RequestPokemonData({type: "Import", payload: format});
+    });
+  };
+
   // Main Process
   try {
     const datas = await FetchData();
+    const pokemonDatas = await FetchPokemonData(datas);
     return datas;
   } catch (error) {
     console.error('Error in Import:', error);

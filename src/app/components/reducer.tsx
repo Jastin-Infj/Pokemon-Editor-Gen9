@@ -25,7 +25,7 @@ function reducer_P_Datas(valueData: PBaseProps[], action: any) {
 }
 
 interface ActionDispatch {
-  type: "ADD" | "UPDATE";
+  type: "FILE" | "Import";
   payload: RequestPokemonData
 }
 
@@ -116,7 +116,7 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
 
   let db_nationalDexAPI;
   switch(action.type) {
-    case "ADD":
+    case "FILE":
       res_dex = await reducer_DBRequest({type: "GET_DEX"} , req_dex);
       req_spec.basenationalDexAPI = res_dex.nationalDexAPI;
       
@@ -146,11 +146,11 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
       return [res_dex, res_specinfo, res_typeinfo, res_iteminfo, res_abilityinfo, res_natureinfo, res_moveinfo , res_teratypeinfo];
 
       break;
-    case "UPDATE":
-      return {
-        ...requestData,
-        ...action.payload
-      };
+    case "Import":
+      console.log("--- Import ---");
+      // TODO ここから
+      res_dex = await reducer_DBRequest({type: "GET_DEX"} , req_dex);
+      console.log(res_dex);
     default:
       return requestData;
   }

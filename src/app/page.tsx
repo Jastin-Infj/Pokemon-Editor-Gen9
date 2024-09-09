@@ -1,5 +1,5 @@
 "use client";
-import { cache, useEffect, useReducer, useState } from "react";
+import React, { cache, useEffect, useReducer, useState } from "react";
 import { PBaseProps } from "@/types";
 import MyDropzone from "./components/dropzone";
 import P_baseList from "./components/p_baseList";
@@ -14,6 +14,7 @@ const initFetchData = cache(async () => {
   return res;
 });
 
+// dispatch は clientのみ利用可能なため、server側での利用は不可
 const importData = cache(async () => {
   const res = await Import();
   return res;
