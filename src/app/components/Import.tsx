@@ -2,6 +2,29 @@
 import { UserData } from "@/types";
 import { headers } from "next/headers";
 
+interface Props {
+  P_datasmethod: React.Dispatch<any>
+}
+
+interface ImportSaveData {
+  f_userID: string,
+  column: number,
+  id: number,
+  PokemonID: number,
+  PokemonName: string | null,
+  move1: number,
+  move2: number,
+  move3: number,
+  move4: number,
+  ability: number,
+  item: number,
+  nature: number,
+  teratype: number,
+  level: number,
+  Ivs: string,
+  Evs: string
+}
+
 const Import = async () => { 
   console.log("--- Import Start ---");
   const FetchData = async () => {
@@ -19,8 +42,15 @@ const Import = async () => {
           'Content-Type': 'application/json'
         }
       });
-      const data = await res.json();
-      return data;
+      const user: UserData = await res.json();
+      const res2 = await fetch(`http://${origin}/api/save?userID=${user.userID}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const savedata = await res2.json();
+      return savedata;
     } catch (error) {
       console.log(error);
     }
@@ -28,12 +58,11 @@ const Import = async () => {
 
   // Main Process
   try {
-    const data = await FetchData();
-    return data;
+    const datas = await FetchData();
+    return datas;
   } catch (error) {
     console.error('Error in Import:', error);
     return { error: error };
   }
 };
-
 export default Import;

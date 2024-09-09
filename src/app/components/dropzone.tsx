@@ -47,7 +47,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
         teratype: res_teratype.typeName,
         level: 50,
 
-        // id
+        // 読み込む際には id なので再度 IDチェックで取得
         innerData: {
           nationalDexAPI: res_dex.nationalDexAPI,
           move1ID: res_move[0].moveID,
