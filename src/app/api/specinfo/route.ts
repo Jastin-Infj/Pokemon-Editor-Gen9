@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest) {  
+export async function GET(req: NextApiRequest) {
   let url = new URL(String(req.url));
   const basenationalDexAPI = url.searchParams.get("basenationalDexAPI") as string;
   try {

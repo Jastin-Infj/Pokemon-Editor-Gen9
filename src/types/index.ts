@@ -1,3 +1,5 @@
+export type useResponseType = "client" | "server";
+
 export interface PBaseProps_InnerData {
   nationalDexAPI: number | null,
   move1ID: number,
