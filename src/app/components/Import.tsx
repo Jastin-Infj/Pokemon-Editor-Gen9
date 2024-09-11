@@ -74,6 +74,9 @@ const Import = async () => {
         teraTypeCurrent: data.teratype
       };
       const res =  await reducer_RequestPokemonData({type: "Import", payload: format});
+      console.log(res);
+
+      // TODO import したデータを読み込み画面へ反映
     });
   };
 
