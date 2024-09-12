@@ -2,7 +2,7 @@
 import { PBaseProps, RequestPokemonData } from '@/types';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import { reducer_RequestPokemonData } from './reducer';
+import { Create_PBaseProps, reducer_RequestPokemonData } from './reducer';
 
 interface Props {
   P_datasmethod: React.Dispatch<any>
@@ -23,43 +23,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
       setFetchData(res);
       console.log(res);
 
-      if(res.length === 0) return;
-      let res_dex = res[0];
-      let res_spec = res[1];
-      let res_type = res[2];
-      let res_item = res[3];
-      let res_ability = res[4];
-      let res_nature = res[5];
-      let res_move = res[6];
-      let res_teratype = res[7];
-
-      // P_Base に格納するデータ
-      const newPBase: PBaseProps = {
-        id: String(res_dex.nationalDexAPI),
-        name: res_dex.nameJA,
-        move1: res_move[0].moveName,
-        move2: res_move[1].moveName,
-        move3: res_move[2].moveName,
-        move4: res_move[3].moveName,
-        ability: res_ability.abilityName,
-        item: res_item.itemName,
-        nature: res_nature.natureName,
-        teratype: res_teratype.typeName,
-        level: 50,
-
-        // 読み込む際には id なので再度 IDチェックで取得
-        innerData: {
-          nationalDexAPI: res_dex.nationalDexAPI,
-          move1ID: res_move[0].moveID,
-          move2ID: res_move[1].moveID,
-          move3ID: res_move[2].moveID,
-          move4ID: res_move[3].moveID,
-          abliityID: res_ability.abilityID,
-          itemID: res_item.itemID,
-          natureID: res_nature.natureID,
-          teraTypeID: res_teratype.typeID,
-        }
-      };
+      let newPBase = Create_PBaseProps("FETCH", res);
       P_datasmethod({type: "ADD", payload: newPBase});
       setFetchData(null);
     };

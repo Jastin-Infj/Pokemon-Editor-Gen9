@@ -31,8 +31,12 @@ const Home = () => {
     });
 
     importData().then((res) => {
-      console.log(res);
-      // TODO: 実際のデータを取得する
+      res = res as PBaseProps[];
+      res.forEach((data: PBaseProps) => {
+        dispatch({type: "ADD", payload: data});
+      });
+    }).catch((error) => {
+      console.log(error);
     });
     
   }, []);
