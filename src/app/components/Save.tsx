@@ -21,6 +21,8 @@ const Save:React.FC<Props> = ({P_datas}) => {
     const handleSave = async () => {
       console.log(P_datas);
 
+      // TODO: importデータと追加を統合して保存する
+
       P_datas.map(async (data , index) => {
         const param: RequestSavePokemonData = {
           column: index + 1,

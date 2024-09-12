@@ -1,8 +1,8 @@
 "use server";
-import { RequestPokemonData, UserData } from "@/types";
+import { PBaseProps, RequestPokemonData, UserData } from "@/types";
 import { headers } from "next/headers";
 import React from "react";
-import { reducer_RequestPokemonData } from "./reducer";
+import { Create_PBaseProps, reducer_RequestPokemonData } from "./reducer";
 
 
 interface ImportSaveData {
@@ -56,12 +56,13 @@ const Import = async () => {
     }
   };
 
-  const FetchPokemonData = async (datas: ImportSaveData[]) => {
+  const FetchPokemonData = async (datas: ImportSaveData[]): Promise<PBaseProps[]> => {
     datas.sort((a , b) => {
       return a.column - b.column;
     });
 
-    datas.forEach(async (data) => {
+    let results: PBaseProps[] = [];
+    await Promise.all(datas.map(async (data) => {
       let format: RequestPokemonData = {
         id: data.PokemonID,
         move1: data.move1,
@@ -74,17 +75,19 @@ const Import = async () => {
         teraTypeCurrent: data.teratype
       };
       const res =  await reducer_RequestPokemonData({type: "Import", payload: format});
-      console.log(res);
 
-      // TODO import したデータを読み込み画面へ反映
-    });
+      let newPBase = Create_PBaseProps("FETCH", res);
+      if(newPBase) results.push(newPBase);
+    }));
+    return results;
   };
 
   // Main Process
   try {
     const datas = await FetchData();
     const pokemonDatas = await FetchPokemonData(datas);
-    return datas;
+    console.log("--- Import End ---");
+    return pokemonDatas;
   } catch (error) {
     console.error('Error in Import:', error);
     return { error: error };

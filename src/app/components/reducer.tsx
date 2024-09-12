@@ -1,8 +1,7 @@
 import { PBaseProps, RequestPokemonData, useResponseType } from "@/types";
-import prisma from "@/lib/prisma";
-import axios from 'axios';
 
 function reducer_P_Datas(valueData: PBaseProps[], action: any) {
+  console.log(valueData);
   switch(action.type) {
     case "ADD":
       return [...valueData, action.payload];
@@ -151,7 +150,6 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
   req_teratype.teraTypeCurrent = requestData.teraTypeCurrent;
   res_teratypeinfo = await reducer_DBRequest({type: "GET_TERATYPEINFO" , from: from_param} , req_teratype);
   return [res_dex, res_specinfo, res_typeinfo, res_iteminfo, res_abilityinfo, res_natureinfo, res_moveinfo , res_teratypeinfo];
-
 };
 
 async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
@@ -361,4 +359,51 @@ async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
   }
 };
 
-export { reducer_P_Datas, reducer_RequestPokemonData, reducer_DBRequest };
+type CreateMode = "FETCH";
+function Create_PBaseProps(mode: CreateMode , option?: any): PBaseProps | null {
+  let res: PBaseProps;
+  switch(mode) {
+    case "FETCH":
+      if(option.length === 0) return null;
+      let res_dex = option[0];
+      let res_spec = option[1];
+      let res_type = option[2];
+      let res_item = option[3];
+      let res_ability = option[4];
+      let res_nature = option[5];
+      let res_move = option[6];
+      let res_teratype = option[7];
+
+      // P_Base に格納するデータ
+      res = {
+        id: String(res_dex.nationalDexAPI),
+        name: res_dex.nameJA,
+        move1: res_move[0].moveName,
+        move2: res_move[1].moveName,
+        move3: res_move[2].moveName,
+        move4: res_move[3].moveName,
+        ability: res_ability.abilityName,
+        item: res_item.itemName,
+        nature: res_nature.natureName,
+        teratype: res_teratype.typeName,
+        level: 50,  
+        // 読み込む際には id なので再度 IDチェックで取得
+        innerData: {
+          nationalDexAPI: res_dex.nationalDexAPI,
+          move1ID: res_move[0].moveID,
+          move2ID: res_move[1].moveID,
+          move3ID: res_move[2].moveID,
+          move4ID: res_move[3].moveID,
+          abliityID: res_ability.abilityID,
+          itemID: res_item.itemID,
+          natureID: res_nature.natureID,
+          teraTypeID: res_teratype.typeID,
+        }
+      };
+      return res;
+    default:
+      return null;
+  }
+}
+
+export { reducer_P_Datas, reducer_RequestPokemonData, reducer_DBRequest , Create_PBaseProps };
