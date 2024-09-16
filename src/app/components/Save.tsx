@@ -1,13 +1,21 @@
 "use client";
 import prisma from "@/lib/prisma";
-import { PBaseProps, RequestSavePokemonData } from "@/types";
+import { PBaseProps, RequestSavePokemonData, UserData } from "@/types";
 import { useEffect, useState } from "react";
 
 interface Props {
-  P_datas: PBaseProps[]
+  P_datas: PBaseProps[],
+  user: UserData | null,
+  User_dispatch?: React.Dispatch<any>
 }
 
-const Save:React.FC<Props> = ({P_datas}) => {
+type SaveOptionType = "CREATE" | "UPDATE";
+interface SaveParams {
+  type: SaveOptionType,
+  param: RequestSavePokemonData
+}
+
+const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
   // await で 非同期処理をするため
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
@@ -21,12 +29,17 @@ const Save:React.FC<Props> = ({P_datas}) => {
     const handleSave = async () => {
       console.log(P_datas);
 
-      // TODO: importデータと追加を統合して保存する
+      // user data がない場合は処理を終了
+      if(user === null || P_datas.length === 0) {
+        setIsClicked(false);
+        return;
+      }
 
+      // TODO: importデータと追加を統合して保存する
       P_datas.map(async (data , index) => {
-        const param: RequestSavePokemonData = {
+        const pam: RequestSavePokemonData = {
           column: index + 1,
-          pokemonID: Number(data.id),
+          nationalAPI: Number(data.innerData.nationalDexAPI),
           pokemonName: data.name,
           move1: Number(data.innerData.move1ID),
           move2: Number(data.innerData.move2ID),
@@ -38,8 +51,18 @@ const Save:React.FC<Props> = ({P_datas}) => {
           teraType: Number(data.innerData.teraTypeID),
           level: Number(data.level),
           ivs: "31/31/31/31/31/31",
-          evs: "252/252/4/0/0/0"
+          evs: "252/252/4/0/0/0",
+          userID: user.userID
         };
+        const params: SaveParams = {
+          type: "CREATE",
+          param: pam
+        };
+
+        if(pam.id) {
+          params.type = "UPDATE";
+          params.param.id = pam.id;
+        }
 
         try {
           const req = await fetch('/api/save', {
@@ -47,7 +70,7 @@ const Save:React.FC<Props> = ({P_datas}) => {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(param)
+            body: JSON.stringify(params)
           });
           const res = await req.json();
           console.log(res);

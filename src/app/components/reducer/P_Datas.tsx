@@ -1,7 +1,6 @@
 import { PBaseProps, RequestPokemonData, useResponseType } from "@/types";
 
 function reducer_P_Datas(valueData: PBaseProps[], action: any) {
-  console.log(valueData);
   switch(action.type) {
     case "ADD":
       return [...valueData, action.payload];
@@ -35,7 +34,7 @@ interface GetAction {
 }
 
 interface Request_DEX {
-  id: number
+  nationalAPI: number
 }
 
 interface Request_SPECINFO {
@@ -77,7 +76,7 @@ Request_TERATYPEINFO;
 async function reducer_RequestPokemonData(action: ActionDispatch) {
   let requestData = action.payload;
   let req_dex: Request_DEX = {
-    id: requestData.id
+    nationalAPI: requestData.nationalAPI
   }
   let req_spec: Request_SPECINFO = {
     basenationalDexAPI: null
@@ -171,7 +170,7 @@ async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
   switch(action.type) {
     case "GET_DEX":
       req = requestData as Request_DEX;
-      req_url = `/api?id=${req.id}`;
+      req_url = `/api?nationalAPI=${req.nationalAPI}`;
       switch(action.from) {
         case "client":
           break;
@@ -360,7 +359,7 @@ async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
 };
 
 type CreateMode = "FETCH";
-function Create_PBaseProps(mode: CreateMode , option?: any): PBaseProps | null {
+function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PBaseProps | null {
   let res: PBaseProps;
   switch(mode) {
     case "FETCH":
@@ -376,7 +375,8 @@ function Create_PBaseProps(mode: CreateMode , option?: any): PBaseProps | null {
 
       // P_Base に格納するデータ
       res = {
-        id: String(res_dex.nationalDexAPI),
+        id: db_id,
+        nationalDexAPI: res_dex.nationalDexAPI,
         name: res_dex.nameJA,
         move1: res_move[0].moveName,
         move2: res_move[1].moveName,
@@ -386,7 +386,7 @@ function Create_PBaseProps(mode: CreateMode , option?: any): PBaseProps | null {
         item: res_item.itemName,
         nature: res_nature.natureName,
         teratype: res_teratype.typeName,
-        level: 50,  
+        level: 50,
         // 読み込む際には id なので再度 IDチェックで取得
         innerData: {
           nationalDexAPI: res_dex.nationalDexAPI,

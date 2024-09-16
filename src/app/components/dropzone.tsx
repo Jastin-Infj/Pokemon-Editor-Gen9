@@ -2,13 +2,14 @@
 import { PBaseProps, RequestPokemonData } from '@/types';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import { Create_PBaseProps, reducer_RequestPokemonData } from './reducer';
+import { Create_PBaseProps, reducer_RequestPokemonData } from './reducer/P_Datas';
 
 interface Props {
-  P_datasmethod: React.Dispatch<any>
+  dispatch_P_datas: React.Dispatch<any>
+  P_datas?: PBaseProps[]
 }
 
-const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
+const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
   const [hexStrings , setHexStrings ] = useState<string[]>([]);
   const [pokemonData , setPokemonData] = useState<RequestPokemonData | null>(null);
   const [fetchData , setFetchData] = useState<any>(null);
@@ -24,8 +25,9 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
       console.log(res);
 
       let newPBase = Create_PBaseProps("FETCH", res);
-      P_datasmethod({type: "ADD", payload: newPBase});
+      dispatch_P_datas({type: "ADD", payload: newPBase});
       setFetchData(null);
+      console.log("useEffect fin");
     };
     fetchData();
   },[pokemonData]);
@@ -131,7 +133,7 @@ const MyDropzone:React.FC<Props> = ({P_datasmethod}) => {
         f_teraTypeCurrent = teratypes[1];
 
         const request: RequestPokemonData = {
-          id: f_id,
+          nationalAPI: f_id,
           move1: f_move1,
           move2: f_move2,
           move3: f_move3,

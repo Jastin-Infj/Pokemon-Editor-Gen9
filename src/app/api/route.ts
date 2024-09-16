@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: NextApiRequest) {
   let url = new URL(String(req.url));
-  const id = url.searchParams.get("id") as string;
+  const nationalAPI = url.searchParams.get("nationalAPI") as string;
   try {
     const dexInfo = await prisma.dexInfo.findFirst({
       where: {
-        nationalDexAPI: parseInt(id)
+        nationalDexAPI: parseInt(nationalAPI)
       }
     });
     return NextResponse.json(dexInfo);

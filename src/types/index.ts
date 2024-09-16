@@ -13,7 +13,7 @@ export interface PBaseProps_InnerData {
 }
 
 export interface PBaseProps {
-  id: string;
+  nationalDexAPI: number;
   name: string;
   move1: string;
   move2: string;
@@ -24,6 +24,7 @@ export interface PBaseProps {
   nature: string;
   teratype: string;
   level?: number;
+  id?: number;
 
   // 内部データ
   innerData: PBaseProps_InnerData;
@@ -124,7 +125,7 @@ export interface DataBaseStat {
 }
 
 export interface RequestPokemonData {
-  id: number,
+  nationalAPI: number,
   move1: number,
   move2: number,
   move3: number,
@@ -134,6 +135,7 @@ export interface RequestPokemonData {
   natureCurrent: number,
   teraTypeCurrent: number,
   // optional
+  id?: number,
   abilityNum?: number,
   natureBase?: number,
   teraTypeBase?: number
@@ -141,7 +143,7 @@ export interface RequestPokemonData {
 
 export interface RequestSavePokemonData {
   column: number,
-  pokemonID: number
+  nationalAPI: number
   pokemonName: string,
   move1: number,
   move2: number,
@@ -154,7 +156,8 @@ export interface RequestSavePokemonData {
   level: number,
   ivs: string
   evs: string,
-  userID?: string
+  userID?: string,
+  id?: number
 }
 
 export interface UserData {

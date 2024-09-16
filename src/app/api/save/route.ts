@@ -1,55 +1,83 @@
 import prisma from "@/lib/prisma";
+import { RequestSavePokemonData } from "@/types";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const data = await req.json();
+async function create(param: RequestSavePokemonData) {
   try {
-    if(data.userID) {
-      await prisma.userSaveData.create({
-        data: {
-          column: data.column,
-          PokemonID: data.pokemonID,
-          move1: data.move1,
-          move2: data.move2,
-          move3: data.move3,
-          move4: data.move4,
-          ability: data.ability,
-          item: data.item,
-          nature: data.nature,
-          teratype: data.teraType,
-          level: data.level,
-          Ivs: data.ivs,
-          Evs: data.evs,
-          userinfo: {
-            connect: {
-              userID: data.userID
-            }
+    await prisma.userSaveData.create({
+      data: {
+        column: param.column,
+        PokemonID: param.nationalAPI,
+        move1: param.move1,
+        move2: param.move2,
+        move3: param.move3,
+        move4: param.move4,
+        ability: param.ability,
+        item: param.item,
+        nature: param.nature,
+        teratype: param.teraType,
+        level: param.level,
+        Ivs: param.ivs,
+        Evs: param.evs,
+        PokemonName: param.pokemonName,
+        userinfo: {
+          connect: {
+            userID: param.userID
           }
         }
-      });
-    } else {
-      await prisma.userSaveData.create({
-        data: {
-          column: data.column,
-          PokemonID: data.pokemonID,
-          move1: data.move1,
-          move2: data.move2,
-          move3: data.move3,
-          move4: data.move4,
-          ability: data.ability,
-          item: data.item,
-          nature: data.nature,
-          teratype: data.teraType,
-          level: data.level,
-          Ivs: data.ivs,
-          Evs: data.evs
-        }
-      });
-    }
-    return NextResponse.json({status: "success"});
+      }
+    });
+    return NextResponse.json({status: `create success: ${param.column}`});
   } catch (error) {
     return NextResponse.json({error: error});
+  }
+}
+
+async function update(param: RequestSavePokemonData) {
+  try {
+    await prisma.userSaveData.update({
+      where: {
+        id: param.id
+      },
+      data: {
+        column: param.column,
+        PokemonID: param.nationalAPI,
+        move1: param.move1,
+        move2: param.move2,
+        move3: param.move3,
+        move4: param.move4,
+        ability: param.ability,
+        item: param.item,
+        nature: param.nature,
+        teratype: param.teraType,
+        level: param.level,
+        Ivs: param.ivs,
+        Evs: param.evs,
+        userinfo: {
+          connect: {
+            userID: param.userID
+          }
+        }
+      }
+    });
+    return NextResponse.json({status: `update success: ${param.column}`});
+  } catch (error) {
+    return NextResponse.json({error: error});
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const data = await req.json();
+  console.log(data);
+
+  switch(data.type) {
+    case "CREATE":
+      return await create(data.param);
+    case "UPDATE":
+      return await update(data.param);
+    default:
+      return NextResponse.json({error: "Invalid type."});
   }
 }
 
