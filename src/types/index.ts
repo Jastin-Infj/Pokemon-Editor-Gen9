@@ -143,7 +143,7 @@ export interface RequestPokemonData {
 
 export interface RequestSavePokemonData {
   column: number,
-  pokemonID: number
+  nationalAPI: number
   pokemonName: string,
   move1: number,
   move2: number,
@@ -156,7 +156,8 @@ export interface RequestSavePokemonData {
   level: number,
   ivs: string
   evs: string,
-  userID?: string
+  userID?: string,
+  id?: number
 }
 
 export interface UserData {

@@ -59,7 +59,6 @@ const Import = async () => {
   };
 
   const FetchPokemonData = async (datas: ImportSaveData[]): Promise<PBaseProps[]> => {
-    console.log(datas);
     datas.sort((a , b) => {
       return a.column - b.column;
     });

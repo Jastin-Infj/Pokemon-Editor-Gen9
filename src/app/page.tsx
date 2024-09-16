@@ -33,7 +33,7 @@ const Home = () => {
     });
 
     importData().then((res: any) => {
-      if(!res) return;
+      if(res.error === "No Data") return;
       let user = res[0] as UserData;
       dispatch_User({type: "IMPORT", payload: user});
 
@@ -48,12 +48,19 @@ const Home = () => {
     
   }, []);
 
+  useEffect(() => {
+    if(P_datas.length === 0) return;
+    console.log(P_datas);
+  }, [P_datas]);
+
+  //TODO 保存データ削除機能 studio がいくのが面倒
+
   return (
     <>
         <header>
           {/* <MyDropzone pbase_list={P_datas} set_pbase_list={setP_datas} /> */}
           {/* <Access /> */}
-          <MyDropzone P_datasmethod={dispatch_P_datas} />
+          <MyDropzone dispatch_P_datas={dispatch_P_datas} P_datas={P_datas} />
         </header>
         <div className="my-5">
           <h1>{API_data ? "Fin" : "loading..."}</h1>
