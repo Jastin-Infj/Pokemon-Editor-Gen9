@@ -1,13 +1,15 @@
 "use client";
 import prisma from "@/lib/prisma";
-import { PBaseProps, RequestSavePokemonData } from "@/types";
+import { PBaseProps, RequestSavePokemonData, UserData } from "@/types";
 import { useEffect, useState } from "react";
 
 interface Props {
-  P_datas: PBaseProps[]
+  P_datas: PBaseProps[],
+  user: UserData | null,
+  User_dispatch?: React.Dispatch<any>
 }
 
-const Save:React.FC<Props> = ({P_datas}) => {
+const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
   // await で 非同期処理をするため
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
@@ -19,10 +21,18 @@ const Save:React.FC<Props> = ({P_datas}) => {
     if(!isClicked) return;
 
     const handleSave = async () => {
-      console.log(P_datas);
+      // console.log(P_datas);
+      console.log(user);
+
+      // user data がない場合は処理を終了
+      if(user === null) {
+        setIsClicked(false);
+        return;
+      }
 
       // TODO: importデータと追加を統合して保存する
-
+      
+      
       P_datas.map(async (data , index) => {
         const param: RequestSavePokemonData = {
           column: index + 1,

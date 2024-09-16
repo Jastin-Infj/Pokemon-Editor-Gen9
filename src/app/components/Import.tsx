@@ -2,7 +2,7 @@
 import { PBaseProps, RequestPokemonData, UserData } from "@/types";
 import { headers } from "next/headers";
 import React from "react";
-import { Create_PBaseProps, reducer_RequestPokemonData } from "./reducer";
+import { Create_PBaseProps, reducer_RequestPokemonData } from "./reducer/P_Datas";
 
 
 interface ImportSaveData {
@@ -43,6 +43,8 @@ const Import = async () => {
         }
       });
       const user: UserData = await res.json();
+      if(!user) return null;
+
       const res2 = await fetch(`http://${origin}/api/save?userID=${user.userID}`, {
         method: 'GET',
         headers: {
@@ -50,13 +52,14 @@ const Import = async () => {
         }
       });
       const savedata = await res2.json();
-      return savedata;
+      return [user , savedata];
     } catch (error) {
       console.log(error);
     }
   };
 
   const FetchPokemonData = async (datas: ImportSaveData[]): Promise<PBaseProps[]> => {
+    console.log(datas);
     datas.sort((a , b) => {
       return a.column - b.column;
     });
@@ -64,7 +67,8 @@ const Import = async () => {
     let results: PBaseProps[] = [];
     await Promise.all(datas.map(async (data) => {
       let format: RequestPokemonData = {
-        id: data.PokemonID,
+        nationalAPI: data.PokemonID,
+        id: data.id,
         move1: data.move1,
         move2: data.move2,
         move3: data.move3,
@@ -76,7 +80,7 @@ const Import = async () => {
       };
       const res =  await reducer_RequestPokemonData({type: "Import", payload: format});
 
-      let newPBase = Create_PBaseProps("FETCH", res);
+      let newPBase = Create_PBaseProps("FETCH", res , Number(data.id));
       if(newPBase) results.push(newPBase);
     }));
     return results;
@@ -85,9 +89,12 @@ const Import = async () => {
   // Main Process
   try {
     const datas = await FetchData();
-    const pokemonDatas = await FetchPokemonData(datas);
+    if(!datas) return { error: "No Data"};
+    let userData = datas[0];
+    let savedata = datas[1] as ImportSaveData[];
+    const pokemonDatas = await FetchPokemonData(savedata);
     console.log("--- Import End ---");
-    return pokemonDatas;
+    return [userData , pokemonDatas];
   } catch (error) {
     console.error('Error in Import:', error);
     return { error: error };
