@@ -67,6 +67,21 @@ async function update(param: RequestSavePokemonData) {
   }
 }
 
+async function allDelete(userID: string) {
+  try {
+    await prisma.userSaveData.deleteMany({
+      where: {
+        userinfo: {
+          userID: userID
+        }
+      }
+    });
+    return NextResponse.json({status: `delete success: ${userID}`});
+  } catch (error) {
+    return NextResponse.json({error: error});
+  }
+}
+
 export async function POST(req: NextRequest) {
   const data = await req.json();
   console.log(data);
@@ -76,6 +91,8 @@ export async function POST(req: NextRequest) {
       return await create(data.param);
     case "UPDATE":
       return await update(data.param);
+    case "ALL_DELETE":
+      return await allDelete(data.param.userID);
     default:
       return NextResponse.json({error: "Invalid type."});
   }

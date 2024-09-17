@@ -6,6 +6,8 @@ function reducer_P_Datas(valueData: PBaseProps[], action: any) {
       return [...valueData, action.payload];
     case "REMOVE":
       return valueData.filter((data) => data.id !== action.payload);
+    case "DELETE_ALL":
+      return [];
     case "UPDATE":
       return valueData.map((data) => {
         if(data.id === action.payload.id) {
