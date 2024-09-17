@@ -9,6 +9,7 @@ import UserLogin from "./components/UserLogin";
 import Save from "./components/Save";
 import Import from "./components/Import";
 import { reducer_User } from "./components/reducer/User";
+import Delete from "./components/Delete";
 
 const initFetchData = cache(async () => {
   const res = await Access();
@@ -53,8 +54,6 @@ const Home = () => {
     console.log(P_datas);
   }, [P_datas]);
 
-  //TODO 保存データ削除機能 studio がいくのが面倒
-
   return (
     <>
         <header>
@@ -68,7 +67,8 @@ const Home = () => {
         </div>
         <main>
           <UserLogin />
-          <Save P_datas={P_datas} user={User} User_dispatch={dispatch_User} /> 
+          <Save P_datas={P_datas} user={User} User_dispatch={dispatch_User} />
+          <Delete dispatch_P_datas={dispatch_P_datas} />
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
               <tr className="text-white">

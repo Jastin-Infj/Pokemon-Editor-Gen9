@@ -9,10 +9,14 @@ interface Props {
   User_dispatch?: React.Dispatch<any>
 }
 
-type SaveOptionType = "CREATE" | "UPDATE";
+type SaveOptionType = "CREATE" | "UPDATE" | "ALL_DELETE";
 interface SaveParams {
   type: SaveOptionType,
   param: RequestSavePokemonData
+}
+interface DeleteParams {
+  type: SaveOptionType,
+  param: UserData
 }
 
 const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
@@ -30,12 +34,34 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
       console.log(P_datas);
 
       // user data がない場合は処理を終了
-      if(user === null || P_datas.length === 0) {
+      if(user === null) {
         setIsClicked(false);
         return;
       }
 
-      // TODO: importデータと追加を統合して保存する
+      if(P_datas.length === 0) {
+        const pam: DeleteParams = {
+          type: "ALL_DELETE",
+          param: user
+        };
+        try {
+          const req = await fetch('/api/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pam)
+          });
+          const res = await req.json();
+          console.log(res);
+          setIsClicked(false);
+        } catch (err) {
+          console.log(err);
+          setIsClicked(false);
+        }
+        return;
+      }
+
       P_datas.map(async (data , index) => {
         const pam: RequestSavePokemonData = {
           column: index + 1,
@@ -59,9 +85,9 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
           param: pam
         };
 
-        if(pam.id) {
+        if(data.id) {
           params.type = "UPDATE";
-          params.param.id = pam.id;
+          params.param.id = data.id;
         }
 
         try {
