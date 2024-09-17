@@ -36,6 +36,8 @@ const P_base: React.FC<PBaseProps> = ({name , move1 , move2 , move3 , move4 , ab
   // チェックボックス選択で削除ボタンコンポーネント追加
   const deleteButton = isChecked ? <button onClick={handleDeleteButton} className={STYLE_STRING_DELETE}>Delete</button> : null;
 
+  //TODO: ここの削除ボタンでもデータベース削除できるようにする
+  
   if(!isDelete) {
     return (
       <tr className={STYLE_STRING}>

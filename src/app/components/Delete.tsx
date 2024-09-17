@@ -8,7 +8,7 @@ interface Props {
 const Delete: React.FC<Props> = ({dispatch_P_datas}) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const handleClick = () => {
-    console.log("Delete");
+    console.log("Delete Button Clicked");
     setIsClicked(true);
   }
 

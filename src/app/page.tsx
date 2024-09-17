@@ -54,8 +54,6 @@ const Home = () => {
     console.log(P_datas);
   }, [P_datas]);
 
-  //TODO 保存データ削除機能 studio がいくのが面倒
-
   return (
     <>
         <header>

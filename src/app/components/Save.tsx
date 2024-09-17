@@ -62,7 +62,6 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
         return;
       }
 
-      // TODO: importデータと追加を統合して保存する
       P_datas.map(async (data , index) => {
         const pam: RequestSavePokemonData = {
           column: index + 1,
@@ -86,9 +85,9 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
           param: pam
         };
 
-        if(pam.id) {
+        if(data.id) {
           params.type = "UPDATE";
-          params.param.id = pam.id;
+          params.param.id = data.id;
         }
 
         try {
