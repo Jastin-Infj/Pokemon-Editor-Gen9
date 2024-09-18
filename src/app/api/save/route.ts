@@ -82,6 +82,19 @@ async function allDelete(userID: string) {
   }
 }
 
+async function remove(id: number) {
+  try {
+    await prisma.userSaveData.delete({
+      where: {
+        id: id
+      }
+    });
+    return NextResponse.json({status: `delete success: ${id}`});
+  } catch (error) {
+    return NextResponse.json({error: error});
+  }
+}
+
 export async function POST(req: NextRequest) {
   const data = await req.json();
   console.log(data);
@@ -91,6 +104,9 @@ export async function POST(req: NextRequest) {
       return await create(data.param);
     case "UPDATE":
       return await update(data.param);
+    case "DELETE":
+      // delete は予約語なので、remove に変更
+      return await remove(data.param.id);
     case "ALL_DELETE":
       return await allDelete(data.param.userID);
     default:
