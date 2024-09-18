@@ -14,6 +14,8 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
   const [pokemonData , setPokemonData] = useState<RequestPokemonData | null>(null);
   const [fetchData , setFetchData] = useState<any>(null);
 
+  // TODO 複数ファイルの対応
+
   // pokemonData が変更されたら、fetchData を実行
   useEffect(() => {
     if(!pokemonData) return;
