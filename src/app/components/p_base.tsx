@@ -49,14 +49,11 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
 
     const deleteData = async () => {
       console.log(`Delete: ${Pbase.id}`);
+      // client側の削除処理
+      dispatch_P_datas({type: "REMOVE", payload: Pbase.id});
 
-      //TODO: 新規作成のデータ削除したい場合 に 削除条件がないため server側で新規作成されてしまう
-      
-
-      // `id` がある場合はデータベースから削除
+      // `id` がある場合はデータベースも削除
       if(Pbase.id) {
-        // client側の削除処理
-        dispatch_P_datas({type: "REMOVE", payload: Pbase.id});
         // server側の削除処理
         const pam = {
           type: "DELETE",
@@ -79,8 +76,6 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
     }
     deleteData();
   }, [isDelete]);
-
-  //TODO: ここの削除ボタンでもデータベース削除できるようにする
   
   if(!isDelete) {
     return (
