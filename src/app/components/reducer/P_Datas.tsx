@@ -1,15 +1,15 @@
 import { PBaseProps, RequestPokemonData, useResponseType } from "@/types";
 
-function reducer_P_Datas(valueData: PBaseProps[], action: any) {
+function reducer_P_Datas(state: PBaseProps[], action: any) {
   switch(action.type) {
     case "ADD":
-      return [...valueData, action.payload];
+      return [...state, action.payload];
     case "REMOVE":
-      return valueData.filter((data) => data.id !== action.payload);
+      return state.filter((data) => data.id !== action.payload);
     case "DELETE_ALL":
       return [];
     case "UPDATE":
-      return valueData.map((data) => {
+      return state.map((data) => {
         if(data.id === action.payload.id) {
           return {
             ...data,
@@ -20,7 +20,7 @@ function reducer_P_Datas(valueData: PBaseProps[], action: any) {
         }
       });
     default:
-      return valueData;
+      return state;
   }
 }
 
