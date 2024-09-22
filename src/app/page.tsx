@@ -88,7 +88,7 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              <P_baseList P_datas={P_datas} dispatch_P_datas={dispatch_P_datas} user={User} />
+              <P_baseList P_datas={P_datas} dispatch_P_datas={dispatch_P_datas} user_Data={User} />
             </tbody>
           </table>
         </main>

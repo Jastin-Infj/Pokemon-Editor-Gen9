@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextApiRequest } from "next";
 import { NextRequest , NextResponse } from "next/server";
 
+// TODO: 複数のユーザーをログイン可能、データを切り替える
 export async function POST(req: NextRequest) {
   const { userID, userName, root } = await req.json();
   try {
