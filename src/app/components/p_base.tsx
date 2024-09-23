@@ -49,8 +49,6 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
 
     const deleteData = async () => {
       console.log(`Delete: ${Pbase.id}`);
-      // client側の削除処理
-      dispatch_P_datas({type: "REMOVE", payload: Pbase.id});
 
       // `id` がある場合はデータベースも削除
       if(Pbase.id) {
@@ -73,6 +71,14 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
           console.log(err);
         }
       }
+
+      // client側の削除処理
+      dispatch_P_datas({type: "REMOVE", payload: Pbase.id});
+
+      // 初期値に戻す
+      setIsDelete(false);
+      // 再レンダリングに影響あるため初期値に戻す
+      setIsChecked(false);
     }
     deleteData();
   }, [isDelete]);
