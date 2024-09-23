@@ -1,21 +1,32 @@
 import prisma from "@/lib/prisma";
+import { UserData } from "@/types";
 import { NextApiRequest } from "next";
 import { NextRequest , NextResponse } from "next/server";
 
-// TODO: 複数のユーザーをログイン可能、データを切り替える
-export async function POST(req: NextRequest) {
-  const { userID, userName, root } = await req.json();
+async function create(param: UserData) {
   try {
     await prisma.userLogin.create({
       data: {
-        userID: userID,
-        userName: userName,
-        root: root
+        userID: param.userID,
+        userName: param.userName,
+        root: param.root
       }
     });
     return NextResponse.json({status: "success"});
   } catch (error) {
     return NextResponse.json({error: error});
+  }
+}
+
+// TODO: 複数のユーザーをログイン可能、データを切り替える
+export async function POST(req: NextRequest) {
+  const data = await req.json();
+
+  switch(data.type) {
+    case "CREATE":
+      return await create(data.param);
+    default:
+      return NextResponse.json({error: "Invalid type."});
   }
 }
 

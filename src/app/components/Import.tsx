@@ -30,6 +30,7 @@ const Import = async () => {
   const origin = headerList.get('host');
   
   const FetchData = async () => {
+    //! 初期設定 
     let param: UserData = {
       userID: "test",
       userName: "test"
