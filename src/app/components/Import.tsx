@@ -24,17 +24,15 @@ interface ImportSaveData {
   Evs: string
 }
 
-const Import = async () => { 
+const Import = async (userimport: UserData | null) => { 
   console.log("--- Import Start ---");
   const headerList = headers();
   const origin = headerList.get('host');
   
   const FetchData = async () => {
     //! 初期設定 
-    let param: UserData = {
-      userID: "test",
-      userName: "test"
-    };
+    if(userimport === null) return null;
+    let param: UserData = userimport as UserData;
 
     try {
       const res = await fetch(`http://${origin}/api/user?userID=${param.userID}&userName=${param.userName}`, {

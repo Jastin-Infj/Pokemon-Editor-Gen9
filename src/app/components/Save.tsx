@@ -31,8 +31,6 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
     if(!isClicked) return;
 
     const handleSave = async () => {
-      console.log(P_datas);
-
       // user data がない場合は処理を終了
       if(user === null) {
         setIsClicked(false);
