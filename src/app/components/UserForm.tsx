@@ -1,13 +1,15 @@
 "use client";
-import { UserData } from "@/types";
+import { PBaseProps, UserData } from "@/types";
 import React, { useEffect, useRef, useState } from "react";
+import Import from "./Import";
 
 interface Props {
   User_dispatch: React.Dispatch<any>
   UserLogined: boolean
+  P_datas_dispatch: React.Dispatch<any>
 }
 
-const UserForm: React.FC<Props> = ({User_dispatch , UserLogined}) => {
+const UserForm: React.FC<Props> = ({User_dispatch , UserLogined , P_datas_dispatch}) => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [username , setUsername] = useState<string | null>(null);
   const [password , setPassword] = useState<string | null>(null);
@@ -23,6 +25,7 @@ const UserForm: React.FC<Props> = ({User_dispatch , UserLogined}) => {
         case true:
           // Logout
           User_dispatch({type: "LOGOUT"});
+          P_datas_dispatch({type: "DELETE_ALL"});
           break;
         case false:
           // Login
@@ -35,26 +38,21 @@ const UserForm: React.FC<Props> = ({User_dispatch , UserLogined}) => {
             userID: username as string,
             userName: password as string,
           };
-      
+
           try {
-            // GET なので url にパラメータを含める
-            const url = `/api/user?userID=${param.userID}&userName=${param.userName}`;
-            const req = await fetch(url, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-            const data = await req.json();
-            console.log(data);
-    
-            // ユーザーデータが存在する場合は、ログイン
-            if(data) {
-              User_dispatch({type: "IMPORT", payload: data});
+            const res = await Import(param) as any;
+            if(res.error === "No Data") {
+              console.error("User not found");
+            } else {
+              User_dispatch({type: "IMPORT", payload: res[0]});
               setUsername(null);
               setPassword(null);
-            } else {
-              console.error("User not found");
+              console.log(res[1]);
+
+              let savedata = res[1] as PBaseProps[];
+              savedata.forEach((data: PBaseProps) => {
+                P_datas_dispatch({type: "ADD", payload: data});
+              });
             }
           } catch (error) {
             console.error(error);

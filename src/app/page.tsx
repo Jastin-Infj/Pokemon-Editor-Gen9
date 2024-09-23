@@ -17,17 +17,19 @@ const initFetchData = cache(async () => {
   return res;
 });
 
-// dispatch は clientのみ利用可能なため、server側での利用は不可
-const importData = cache(async () => {
-  const res = await Import();
-  return res;
-});
-
 const Home = () => {
   const [P_datas, dispatch_P_datas] = useReducer(reducer_P_Datas, []);
   const [User , dispatch_User] = useReducer(reducer_User , null);
   const [isLogin , setIsLogin] = useState<boolean>(false);
   const [API_data , setAPI_data] = useState<boolean>(false);
+
+  // dispatch は clientのみ利用可能なため、server側での利用は不可
+  const importData = cache(async () => {
+    //TODO 初期値なしの場合の処理
+    const res = await Import(User);
+    return res;
+  });
+
 
   useEffect(() => {
     if(API_data) return;
@@ -77,7 +79,7 @@ const Home = () => {
         </div>
         <main>
           <h1>{User?.userID}</h1>
-          <UserForm User_dispatch={dispatch_User} UserLogined={isLogin} />
+          <UserForm User_dispatch={dispatch_User} UserLogined={isLogin} P_datas_dispatch={dispatch_P_datas} />
           <UserLogin />
           <Save P_datas={P_datas} user={User} User_dispatch={dispatch_User} />
           <Delete dispatch_P_datas={dispatch_P_datas} />
