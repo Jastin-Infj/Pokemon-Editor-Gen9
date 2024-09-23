@@ -10,6 +10,7 @@ import Save from "./components/Save";
 import Import from "./components/Import";
 import { reducer_User } from "./components/reducer/User";
 import Delete from "./components/Delete";
+import UserForm from "./components/UserForm";
 
 const initFetchData = cache(async () => {
   const res = await Access();
@@ -25,6 +26,7 @@ const importData = cache(async () => {
 const Home = () => {
   const [P_datas, dispatch_P_datas] = useReducer(reducer_P_Datas, []);
   const [User , dispatch_User] = useReducer(reducer_User , null);
+  const [isLogin , setIsLogin] = useState<boolean>(false);
   const [API_data , setAPI_data] = useState<boolean>(false);
 
   useEffect(() => {
@@ -34,9 +36,12 @@ const Home = () => {
     });
 
     importData().then((res: any) => {
-      if(res.error === "No Data") return;
+      if(res.error === "No Data") {
+        return;
+      }
       let user = res[0] as UserData;
       dispatch_User({type: "IMPORT", payload: user});
+      setIsLogin(true);
 
       // 保存データから client へ反映
       let savedata = res[1] as PBaseProps[];
@@ -54,6 +59,11 @@ const Home = () => {
     console.log(P_datas);
   }, [P_datas]);
 
+  // ログイン状態はユーザー情報の影響配下にあるため受ける側として処理
+  useEffect(() => {
+    User ? setIsLogin(true) : setIsLogin(false);
+  }, [User]);
+
   return (
     <>
         <header>
@@ -66,6 +76,8 @@ const Home = () => {
           <h1>{P_datas.length}</h1>
         </div>
         <main>
+          <h1>{User?.userID}</h1>
+          <UserForm User_dispatch={dispatch_User} UserLogined={isLogin} />
           <UserLogin />
           <Save P_datas={P_datas} user={User} User_dispatch={dispatch_User} />
           <Delete dispatch_P_datas={dispatch_P_datas} />
