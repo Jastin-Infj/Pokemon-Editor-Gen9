@@ -18,13 +18,12 @@ async function create(param: UserData) {
   }
 }
 
-// TODO: 複数のユーザーをログイン可能、データを切り替える
 export async function POST(req: NextRequest) {
   const data = await req.json();
 
   switch(data.type) {
     case "CREATE":
-      return await create(data.param);
+      return await create(data.userdata);
     default:
       return NextResponse.json({error: "Invalid type."});
   }

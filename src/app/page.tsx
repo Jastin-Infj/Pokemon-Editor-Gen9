@@ -11,6 +11,7 @@ import Import from "./components/Import";
 import { reducer_User } from "./components/reducer/User";
 import Delete from "./components/Delete";
 import UserForm from "./components/UserForm";
+import { reducer_FormUser } from "./components/reducer/FormUser";
 
 const initFetchData = cache(async () => {
   const res = await Access();
@@ -20,12 +21,13 @@ const initFetchData = cache(async () => {
 const Home = () => {
   const [P_datas, dispatch_P_datas] = useReducer(reducer_P_Datas, []);
   const [User , dispatch_User] = useReducer(reducer_User , null);
+  const [formUser , dispatch_FormUser] = useReducer(reducer_FormUser, null);
+
   const [isLogin , setIsLogin] = useState<boolean>(false);
   const [API_data , setAPI_data] = useState<boolean>(false);
 
   // dispatch は clientのみ利用可能なため、server側での利用は不可
   const importData = cache(async () => {
-    //TODO 初期値なしの場合の処理
     const res = await Import(User);
     return res;
   });
@@ -79,8 +81,8 @@ const Home = () => {
         </div>
         <main>
           <h1>{User?.userID}</h1>
-          <UserForm User_dispatch={dispatch_User} UserLogined={isLogin} P_datas_dispatch={dispatch_P_datas} />
-          <UserLogin />
+          <UserForm User_dispatch={dispatch_User} UserLogined={isLogin} P_datas_dispatch={dispatch_P_datas} FormUser={formUser} FormUser_dispatch={dispatch_FormUser}/>
+          <UserLogin userdata={formUser} />
           <Save P_datas={P_datas} user={User} User_dispatch={dispatch_User} />
           <Delete dispatch_P_datas={dispatch_P_datas} />
           <table className="table-fixed w-full mx-10 my-20">

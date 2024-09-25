@@ -165,3 +165,8 @@ export interface UserData {
   userName: string,
   root?: boolean
 }
+
+export interface FormUserInput {
+  username: string | null,
+  password: string | null
+}

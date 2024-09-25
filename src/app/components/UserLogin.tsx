@@ -1,9 +1,19 @@
 "use client";
 import prisma from "@/lib/prisma";
-import { RequestSavePokemonData, UserData } from "@/types";
+import { FormUserInput, RequestSavePokemonData, UserData } from "@/types";
 import { useEffect, useState } from "react";
 
-const UserLogin = () => {
+interface Props {
+  userdata: FormUserInput | null;
+}
+
+interface RequestProps {
+  type: string;
+  userdata: UserData;
+}
+
+// TODO Form に入れるため リファクタリングする
+const UserLogin: React.FC<Props> = ({userdata}) => {
   // await で 非同期処理をするため
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
@@ -15,10 +25,18 @@ const UserLogin = () => {
     if(!isClicked) return;
 
     const handleSave = async () => {
-      const param: UserData = {
-        userID: "test",
-        userName: "test",
-        root: false
+      if(!userdata) {
+        console.error("userdata is null");
+        return;
+      }
+
+      const param: RequestProps = {
+        type: "CREATE",
+        userdata: {
+          userName: userdata.username as string,
+          userID: userdata.password as string,
+          root: false
+        }
       };
 
       try {
@@ -34,7 +52,6 @@ const UserLogin = () => {
       } catch (error) {
         console.log(error);
       }
-
       
     };
     handleSave();
