@@ -1,7 +1,8 @@
 "use client";
 import { FormUserInput, PBaseProps, UserData } from "@/types";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Import from "./Import";
+import UserLogin from "./UserLogin";
 
 interface Props {
   User_dispatch: React.Dispatch<any>
@@ -141,6 +142,7 @@ const UserForm: React.FC<Props> = ({User_dispatch , UserLogined , P_datas_dispat
           ) : (
             <button className="bg-blue-400 text-white rounded-sm">Login</button>
           )}
+          <UserLogin userdata={FormUser} />
         </div>
       </form>
     </>

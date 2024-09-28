@@ -41,6 +41,7 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
     fetchData();
   },[requestpokemonData]);
 
+  //TODO 性別、個体値、努力値、レベルの取得
   const onDrop = (acceptedFiles: File[]) => {
     console.log("onDrop called");
     acceptedFiles.forEach((file) => {
