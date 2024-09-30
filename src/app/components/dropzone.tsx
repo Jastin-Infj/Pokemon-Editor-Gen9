@@ -9,7 +9,32 @@ interface Props {
   P_datas?: PBaseProps[]
 }
 
-// ae 5a 43 23 5a 5d
+// HP
+// 44:  68
+// 45:  69
+// 58:  76
+// 59:  77
+// 60:  78
+// 78:  8a
+// 80:  8c
+
+// HP以外
+// 80:  55
+// 82:  57
+// 83:  58
+// 100: 69
+
+//HP分だけアドレスがずれる？
+//       6 * 2   , 138 * 2 ,  140 * 2
+// 001: [fe ac,69 00,00 00 00 00]
+// 002: [0e 2d,78 00,00 00 00 80] 
+// 003: [23 2d,8c 00,00 00 00 80] +21 +20
+// 004: [37 2d,63 00,00 00 00 80] +20 -41
+// 005: [4b 2d,76 00,00 00 00 80]
+// 006: [60 2d,8a 00,00 00 00 80]
+// 007: [0d 2d,68 00,00 00 00 80]
+// 008: [1d 2d,77 00,00 00 00 80]
+// 009: [32 2d,8b 00,00 00 00 80]
 
 // normal: 00: [80 00,00 00,null]
   // OFFSET: 138*2(4) は 330*2(4) に依存している？
@@ -19,7 +44,7 @@ interface Props {
   // 03: [af 00]
   // 04: [b0 00]
   // 05: [b0 00]
-  // 06: [b1 00] 
+  // 06: [b1 00]
   // 07: [b1 00]
   // 08: [b2 00]
   // 09: [b2 00]
@@ -30,6 +55,7 @@ interface Props {
   // 0e: [b5 00]
   // 0f: [b5 00]
 
+//モロバレル Lv.50
   // HP: [6*2(4),140*2(8),330*2(4)]
   // 00: [80 80,00 00 00 00,ae 00]
   // 01: [81 80,01 00 00 00,ae 00]
@@ -138,20 +164,23 @@ interface Props {
   // 0e: [87 80,00 00 07 00,2a 00]
   // 0f: [87 00,00 80 07 00,2a 00]
 
-//TODO 個体値の算出方法を見破る
+//フシギソウ Lv.100
+//TODO 実数値で値が変化しているか確認 フシギソウでやる
+
 const HEX = {
   POKEMON: 8 * 2,
   GENDER: 34 * 2,
   EVS: 38 * 2,
   IVS: {
-    OFFSET1: 6 * 2,
-    OFFSET2: 138 * 2,//2
-    HP: [140 * 2 , 330 * 2], // fb: 31 dc: 0
-    ATK: [140 * 2,332 * 2], // 9b: 31 7d: 0 
-    DEF: [141 * 2,334 * 2], // 9b: 31 7d: 0
-    SPA: [142 * 2,338 * 2], // bb: 31 9c: 0
-    SPD: [143 * 2,340 * 2], // a4: 31 86: 0
-    SPE: [142 * 2,336 * 2], // 94: 31 75: 0
+    OFFSET: 138 * 2,
+    COMMON_FIRST: 6 * 2,
+    COMMON_SECOND: 138 * 2,
+    HP:  330 * 2,
+    ATK: 332 * 2, 
+    DEF: 334 * 2,
+    SPA: 338 * 2,
+    SPD: 340 * 2,
+    SPE: 336 * 2,
   },
   IVS_MIN: {
     HP: parseInt("dc", 16),
@@ -249,6 +278,7 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
             // Gender
             const gender = newHexString.substring(HEX.GENDER , HEX.GENDER + 2);
             const decimalValue = parseInt(gender, 16);
+            f_gender = decimalValue;
             // 0: ♂ 2: ♀
             console.log(`Gender: ${decimalValue}`);
           }
@@ -266,57 +296,39 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
 
           {
             // IVs
-            const ivslist: any[] = [];
-            for(let i = 0; i < 6; i++) {
-              let val = null;
-              let listindex;
-              switch(i) {
-                case 0:
-                  listindex = HEX.IVS.HP.length - 1;
-                  val = newHexString.substring(HEX.IVS.HP[listindex], HEX.IVS.HP[listindex] + 2);
-                  val = parseInt(val, 16);
-                  val -= HEX.IVS_MIN.HP;
-                  val += HEX.IVS_OPTION.HP;
-                  break;
-                case 1:
-                  listindex = HEX.IVS.ATK.length - 1;
-                  val = newHexString.substring(HEX.IVS.ATK[listindex], HEX.IVS.ATK[listindex] + 2);
-                  val = parseInt(val, 16);
-                  val -= HEX.IVS_MIN.ATK;
-                  val += HEX.IVS_OPTION.ATK;
-                  break;
-                case 2:
-                  listindex = HEX.IVS.DEF.length - 1;
-                  val = newHexString.substring(HEX.IVS.DEF[listindex], HEX.IVS.DEF[listindex] + 2);
-                  val = parseInt(val, 16);
-                  val -= HEX.IVS_MIN.DEF;
-                  val += HEX.IVS_OPTION.DEF;
-                  break;
-                case 3:
-                  listindex = HEX.IVS.SPA.length - 1;
-                  val = newHexString.substring(HEX.IVS.SPA[listindex], HEX.IVS.SPA[listindex] + 2);
-                  val = parseInt(val, 16);
-                  val -= HEX.IVS_MIN.SPA;
-                  val += HEX.IVS_OPTION.SPA;
-                  break;
-                case 4:
-                  listindex = HEX.IVS.SPD.length - 1;
-                  val = newHexString.substring(HEX.IVS.SPD[listindex], HEX.IVS.SPD[listindex] + 2);
-                  val = parseInt(val, 16);
-                  val -= HEX.IVS_MIN.SPD;
-                  val += HEX.IVS_OPTION.SPD;
-                  break;
-                case 5:
-                  listindex = HEX.IVS.SPE.length - 1;
-                  val = newHexString.substring(HEX.IVS.SPE[listindex], HEX.IVS.SPE[listindex] + 2);
-                  val = parseInt(val, 16);
-                  val -= HEX.IVS_MIN.SPE;
-                  val += HEX.IVS_OPTION.SPE;
-                  break;
-              }
-              ivslist.push(val);
-            }
-            console.log(`IVs: ${ivslist}`);
+            const ivslist: any = {
+              HP: null,
+              ATK: null,
+              DEF: null,
+              SPA: null,
+              SPD: null,
+              SPE: null,
+            };
+            // 4byte
+            let common1 = newHexString.substring(HEX.IVS.COMMON_FIRST , HEX.IVS.COMMON_FIRST + 4);
+            let decCommon1 = parseInt(common1, 16);
+            // 基準値を ♂と統一
+            decCommon1 = decCommon1 - f_gender;
+            // result
+            common1 = decCommon1.toString(16);
+            
+            // 8byte
+            const common2 = newHexString.substring(HEX.IVS.COMMON_SECOND , HEX.IVS.COMMON_SECOND + 8);
+            const hp = newHexString.substring(HEX.IVS.HP , HEX.IVS.HP + 4);
+            const atk = newHexString.substring(HEX.IVS.ATK , HEX.IVS.ATK + 4);
+            const def = newHexString.substring(HEX.IVS.DEF , HEX.IVS.DEF + 4);
+            const spa = newHexString.substring(HEX.IVS.SPA , HEX.IVS.SPA + 4);
+            const spd = newHexString.substring(HEX.IVS.SPD , HEX.IVS.SPD + 4);
+            const spe = newHexString.substring(HEX.IVS.SPE , HEX.IVS.SPE + 4);
+
+            ivslist.HP  = hp;  
+            ivslist.ATK = atk;
+            ivslist.DEF = def;
+            ivslist.SPA = spa;
+            ivslist.SPD = spd;
+            ivslist.SPE = spe;
+            console.log(`IVs Common: ${common1} , ${common2}`);
+            console.log(`IVs: ${hp} , ${atk} , ${def} , ${spa} , ${spd} , ${spe}`);
           }
 
           {
