@@ -25,6 +25,8 @@ export interface PBaseProps {
   teratype: string;
   level?: number;
   id?: number;
+  ivs?: string;
+  evs?: string;
 
   // 内部データ
   innerData: PBaseProps_InnerData;
@@ -138,7 +140,9 @@ export interface RequestPokemonData {
   id?: number,
   abilityNum?: number,
   natureBase?: number,
-  teraTypeBase?: number
+  teraTypeBase?: number,
+  ivs?: string,
+  evs?: string
 };
 
 export interface RequestSavePokemonData {

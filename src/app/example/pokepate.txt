@@ -1,0 +1,122 @@
+https://pokepast.es
+
+Azelf @ Escape Rope
+IVs: 13 Def / 6 SpA / 18 Spe
+Ability: Levitate
+Level: 50
+Jolly Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Charizard (F) @ Red Shard
+IVs: 21 HP / 20 Atk / 8 Def / 26 SpA / 27 SpD / 26 Spe
+EVs: 5 HP / 44 Atk / 9 Def / 252 SpA / 166 SpD / 34 Spe
+Ability: Solar Power
+Quirky Nature
+- Scary Face
+- Fire Spin
+- Inferno
+- Flare Blitz
+
+Bulbasaur @ Oranguru fur
+IVs: 0 Atk / 15 SpA / 23 SpD
+EVs: 252 HP / 252 Atk / 4 Def
+Ability: Chlorophyll
+Level: 50
+Sassy Nature
+- Flamethrower
+- Leech seed
+- Protect
+- Temper flare
+
+Bulbasaur (F)
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ability: Chlorophyll
+Level: 98
+Quirky Nature
+- Synthesis
+- Worry Seed
+- Double-Edge
+- Solar Beam
+
+
+
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+  
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic

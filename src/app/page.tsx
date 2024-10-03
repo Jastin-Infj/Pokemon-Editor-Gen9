@@ -12,6 +12,7 @@ import { reducer_User } from "./components/reducer/User";
 import Delete from "./components/Delete";
 import UserForm from "./components/UserForm";
 import { reducer_FormUser } from "./components/reducer/FormUser";
+import Pokepast from "./components/Pokepast";
 
 const initFetchData = cache(async () => {
   const res = await Access();
@@ -82,9 +83,9 @@ const Home = () => {
         <main>
           <h1>{User?.userID}</h1>
           <UserForm User_dispatch={dispatch_User} UserLogined={isLogin} P_datas_dispatch={dispatch_P_datas} FormUser={formUser} FormUser_dispatch={dispatch_FormUser}/>
-          <UserLogin userdata={formUser} />
           <Save P_datas={P_datas} user={User} User_dispatch={dispatch_User} />
           <Delete dispatch_P_datas={dispatch_P_datas} />
+          <Pokepast P_datas={P_datas}/>
           <table className="table-fixed w-full mx-10 my-20">
             <thead className="bg-gray-900">
               <tr className="text-white">
