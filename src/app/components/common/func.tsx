@@ -11,4 +11,19 @@ export namespace CommonMyFunc {
   export function toReplaceHyphenWithSpace(str: string): string {
     return str.replace(/-/g, ' ');
   }
+
+  // リトルエンディアンからビッグエンディアンに変換する
+  export function toLittleEndianToBigEndian(hexstr: string): string | null {
+    // 長さが奇数の場合は先頭に0を追加する
+    if(hexstr.length % 2 !== 0) {
+      hexstr = '0' + hexstr;
+    }
+
+    const bytes = hexstr.match(/.{1,2}/g);
+    if(bytes === null) return null;
+    
+    const reversedBytes = bytes.reverse();
+    const reversedHexstr = reversedBytes.join('');
+    return reversedHexstr;
+  }
 }
