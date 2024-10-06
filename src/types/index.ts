@@ -26,8 +26,8 @@ export interface PBaseProps {
   level?: number;
   gender?: GenderType;
   id?: number;
-  ivs?: BaseStatus;
-  evs?: BaseStatus;
+  ivs: BaseStatus;
+  evs: BaseStatus;
   // 内部データ
   innerData: PBaseProps_InnerData;
 };
@@ -137,6 +137,8 @@ export interface RequestPokemonData {
   item: number,
   natureCurrent: number,
   teraTypeCurrent: number,
+  ivs: BaseStatus,
+  evs: BaseStatus,
   // optional
   id?: number,
   abilityNum?: number,
@@ -144,10 +146,9 @@ export interface RequestPokemonData {
   teraTypeBase?: number,
   level?: number,
   gender?: GenderType,
-  ivs?: BaseStatus,
-  evs?: BaseStatus
 };
 
+//TODO Gender data add
 export interface RequestSavePokemonData {
   column: number,
   nationalAPI: number

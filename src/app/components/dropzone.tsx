@@ -310,10 +310,10 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
             item: f_item,
             natureCurrent: f_natureCurrent,
             teraTypeCurrent: f_teraTypeCurrent,
-            level: f_level,
-            gender: f_gender,
             ivs: f_ivs,
             evs: f_evs,
+            level: f_level,
+            gender: f_gender,
           };
           setrequestPokemonData((prevlist) => [...prevlist , request]);
         } // if (binaryString)

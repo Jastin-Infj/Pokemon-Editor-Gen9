@@ -61,6 +61,27 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
       }
 
       P_datas.map(async (data , index) => {
+        let ivs_format = {
+          hp: String(data.ivs.hp),
+          atk: String(data.ivs.attack),
+          def: String(data.ivs.defense),
+          spa: String(data.ivs.spattack),
+          spd: String(data.ivs.spdefense),
+          spe: String(data.ivs.speed)
+        };
+        const ivs_text = `${ivs_format.hp}/${ivs_format.atk}/${ivs_format.def}/${ivs_format.spa}/${ivs_format.spd}/${ivs_format.spe}`;
+
+        let evs_format = {
+          hp: String(data.evs.hp),
+          atk: String(data.evs.attack),
+          def: String(data.evs.defense),
+          spa: String(data.evs.spattack),
+          spd: String(data.evs.spdefense),
+          spe: String(data.evs.speed)
+        };
+        const evs_text = `${evs_format.hp}/${evs_format.atk}/${evs_format.def}/${evs_format.spa}/${evs_format.spd}/${evs_format.spe}`;
+        let f_level = data.level ? data.level : 50;
+
         const pam: RequestSavePokemonData = {
           column: index + 1,
           nationalAPI: Number(data.innerData.nationalDexAPI),
@@ -73,9 +94,9 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
           item: Number(data.innerData.itemID),
           nature: Number(data.innerData.natureID),
           teraType: Number(data.innerData.teraTypeID),
-          level: Number(data.level),
-          ivs: "31/31/31/31/31/31",
-          evs: "252/252/4/0/0/0",
+          level: f_level,
+          ivs: ivs_text,
+          evs: evs_text,
           userID: user.userID
         };
         const params: SaveParams = {
