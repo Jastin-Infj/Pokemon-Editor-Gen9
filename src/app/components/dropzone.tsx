@@ -1,5 +1,5 @@
 "use client";
-import { PBaseProps, RequestPokemonData } from '@/types';
+import { BaseStatus, GenderType, PBaseProps, RequestPokemonData } from '@/types';
 import React, {useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import { Create_PBaseProps, reducer_RequestPokemonData } from './reducer/P_Datas';
@@ -78,6 +78,13 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
     const fetchData = async () => {
       const newFetchDataList = await Promise.all(requestpokemonData.map(async (data) => {
         const res:any = await reducer_RequestPokemonData({type: "FILE", payload: data});
+        let optionData = {
+          level: data.level,
+          gender: data.gender,
+          ivs: data.ivs,
+          evs: data.evs
+        };
+        res.push(optionData);
         return res;
       }));
       setFetchData(newFetchDataList);
@@ -97,7 +104,6 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
     fetchData();
   },[requestpokemonData]);
 
-  //TODO 性別、個体値、努力値、レベルの取得
   const onDrop = (acceptedFiles: File[]) => {
     console.log("onDrop called");
     acceptedFiles.forEach((file) => {
@@ -109,7 +115,7 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
           setHexStrings([...hexStrings, newHexString]);
   
           let f_id:number;
-          let f_gender:number;
+          let f_gender:GenderType;
           let f_level:number;
           let f_move1:number;
           let f_move2:number;
@@ -119,6 +125,8 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
           let f_item:number;
           let f_natureCurrent:number;
           let f_teraTypeCurrent:number;
+          let f_ivs:BaseStatus;
+          let f_evs:BaseStatus;
           
           {
             // Pokemon
@@ -135,7 +143,17 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
             // Gender
             const gender = newHexString.substring(HEX.GENDER , HEX.GENDER + 2);
             const decimalValue = parseInt(gender, 16);
-            f_gender = decimalValue;
+            switch(decimalValue) {
+              case 0:
+                f_gender = "♂";
+                break;
+              case 2:
+                f_gender = "♀";
+                break;
+              default:
+                f_gender = "none";
+                break;
+            }
             // 0: ♂ 2: ♀
             console.log(`Gender: ${decimalValue}`);
           }
@@ -149,6 +167,15 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
               evslist.push(decimalValue);
             }
             console.log(`EVs: ${evslist}`);
+
+            f_evs = {
+              hp: evslist[0],
+              attack: evslist[1],
+              defense: evslist[2],
+              spattack: evslist[3],
+              spdefense: evslist[4],
+              speed: evslist[5]
+            }
           }
 
           {
@@ -187,7 +214,15 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
                 ivslist[key] = 0;
               }
             }
-            console.log(ivslist);
+
+            f_ivs = {
+              hp: ivslist.HP,
+              attack: ivslist.ATK,
+              defense: ivslist.DEF,
+              spattack: ivslist.SPA,
+              spdefense: ivslist.SPD,
+              speed: ivslist.SPE
+            }
           }
 
           {
@@ -275,6 +310,10 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
             item: f_item,
             natureCurrent: f_natureCurrent,
             teraTypeCurrent: f_teraTypeCurrent,
+            level: f_level,
+            gender: f_gender,
+            ivs: f_ivs,
+            evs: f_evs,
           };
           setrequestPokemonData((prevlist) => [...prevlist , request]);
         } // if (binaryString)

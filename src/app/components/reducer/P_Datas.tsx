@@ -150,7 +150,16 @@ async function reducer_RequestPokemonData(action: ActionDispatch) {
   res_moveinfo = await reducer_DBRequest({type: "GET_MOVEINFO" , from: from_param} , req_move);
   req_teratype.teraTypeCurrent = requestData.teraTypeCurrent;
   res_teratypeinfo = await reducer_DBRequest({type: "GET_TERATYPEINFO" , from: from_param} , req_teratype);
-  return [res_dex, res_specinfo, res_typeinfo, res_iteminfo, res_abilityinfo, res_natureinfo, res_moveinfo , res_teratypeinfo];
+  return [
+    res_dex,
+    res_specinfo,
+    res_typeinfo,
+    res_iteminfo,
+    res_abilityinfo,
+    res_natureinfo,
+    res_moveinfo ,
+    res_teratypeinfo
+  ];
 };
 
 async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
@@ -374,6 +383,7 @@ function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PB
       let res_nature = option[5];
       let res_move = option[6];
       let res_teratype = option[7];
+      let res_basedata = option[8];
 
       // P_Base に格納するデータ
       res = {
@@ -388,7 +398,25 @@ function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PB
         item: res_item.itemName,
         nature: res_nature.natureName,
         teratype: res_teratype.typeName,
-        level: 50,
+
+        level: res_basedata.level,
+        gender: res_basedata.gender,
+        ivs: {
+          hp: res_basedata.ivs.hp,
+          attack: res_basedata.ivs.attack,
+          defense: res_basedata.ivs.defense,
+          spattack: res_basedata.ivs.spattack,
+          spdefense: res_basedata.ivs.spdefense,
+          speed: res_basedata.ivs.speed
+        },
+        evs: {
+          hp: res_basedata.evs.hp,
+          attack: res_basedata.evs.attack,
+          defense: res_basedata.evs.defense,
+          spattack: res_basedata.evs.spattack,
+          spdefense: res_basedata.evs.spdefense,
+          speed: res_basedata.evs.speed
+        },
         // 読み込む際には id なので再度 IDチェックで取得
         innerData: {
           nationalDexAPI: res_dex.nationalDexAPI,

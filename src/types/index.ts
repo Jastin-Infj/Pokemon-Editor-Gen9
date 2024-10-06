@@ -24,10 +24,10 @@ export interface PBaseProps {
   nature: string;
   teratype: string;
   level?: number;
+  gender?: GenderType;
   id?: number;
-  ivs?: string;
-  evs?: string;
-
+  ivs?: BaseStatus;
+  evs?: BaseStatus;
   // 内部データ
   innerData: PBaseProps_InnerData;
 };
@@ -117,6 +117,7 @@ export interface DataAbility {
 };
 
 export type BaseStatusName = "hp" | "attack" | "defense" | "special-attack" | "special-defense" | "speed";
+export type GenderType = "♂" | "♀" | "none";
 export interface DataBaseStat {
   base_stat: number,
   effort: number,
@@ -141,8 +142,10 @@ export interface RequestPokemonData {
   abilityNum?: number,
   natureBase?: number,
   teraTypeBase?: number,
-  ivs?: string,
-  evs?: string
+  level?: number,
+  gender?: GenderType,
+  ivs?: BaseStatus,
+  evs?: BaseStatus
 };
 
 export interface RequestSavePokemonData {

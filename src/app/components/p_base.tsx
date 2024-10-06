@@ -100,12 +100,12 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
         <td>{Pbase.nature}</td>
         <td>{Pbase.teratype}</td>
         <td>{Pbase.level}</td>
-        <td>
-          <P_ivevSelect {...styleprops}/>
-        </td>
-        <td>
-          <P_ivevSelect {...styleprops} />
-        </td>
+        {Pbase.ivs ? <td>
+          {Pbase.ivs.hp} / {Pbase.ivs.attack} / {Pbase.ivs.defense} / {Pbase.ivs.spattack} / {Pbase.ivs.spdefense} / {Pbase.ivs.speed}
+        </td> : <td></td>}
+        {Pbase.evs ? <td>
+          {Pbase.evs.hp} / {Pbase.evs.attack} / {Pbase.evs.defense} / {Pbase.evs.spattack} / {Pbase.evs.spdefense} / {Pbase.evs.speed}
+        </td> : <td></td>}
       </tr>
     );
   } else {
