@@ -1,5 +1,5 @@
 "use server";
-import { PBaseProps, RequestPokemonData, UserData } from "@/types";
+import { GenderType, PBaseProps, RequestPokemonData, UserData } from "@/types";
 import { headers } from "next/headers";
 import React from "react";
 import { Create_PBaseProps, reducer_RequestPokemonData } from "./reducer/P_Datas";
@@ -11,6 +11,7 @@ interface ImportSaveData {
   id: number,
   PokemonID: number,
   PokemonName: string | null,
+  gender: GenderType,
   move1: number,
   move2: number,
   move3: number,
@@ -67,6 +68,7 @@ const Import = async (userimport: UserData | null) => {
       let format: RequestPokemonData = {
         nationalAPI: data.PokemonID,
         id: data.id,
+        gender: data.gender,
         move1: data.move1,
         move2: data.move2,
         move3: data.move3,
@@ -74,10 +76,32 @@ const Import = async (userimport: UserData | null) => {
         ability: data.ability,
         item: data.item,
         natureCurrent: data.nature,
-        teraTypeCurrent: data.teratype
+        teraTypeCurrent: data.teratype,
+        ivs: {
+          hp: Number(data.Ivs.split('/')[0]),
+          attack: Number(data.Ivs.split('/')[1]),
+          defense: Number(data.Ivs.split('/')[2]),
+          spattack: Number(data.Ivs.split('/')[3]),
+          spdefense: Number(data.Ivs.split('/')[4]),
+          speed: Number(data.Ivs.split('/')[5])
+        },
+        evs: {
+          hp: Number(data.Evs.split('/')[0]),
+          attack: Number(data.Evs.split('/')[1]),
+          defense: Number(data.Evs.split('/')[2]),
+          spattack: Number(data.Evs.split('/')[3]),
+          spdefense: Number(data.Evs.split('/')[4]),
+          speed: Number(data.Evs.split('/')[5])
+        }
       };
       const res =  await reducer_RequestPokemonData({type: "Import", payload: format});
-
+      let option = {
+        level: data.level,
+        gender: data.gender,
+        ivs: data.Ivs,
+        evs: data.Evs,
+      };
+      res.push(option);
       let newPBase = Create_PBaseProps("FETCH", res , Number(data.id));
       if(newPBase) results.push(newPBase);
     }));

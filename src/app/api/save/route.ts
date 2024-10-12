@@ -9,6 +9,7 @@ async function create(param: RequestSavePokemonData) {
       data: {
         column: param.column,
         PokemonID: param.nationalAPI,
+        gender: param.gender,
         move1: param.move1,
         move2: param.move2,
         move3: param.move3,
