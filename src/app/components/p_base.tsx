@@ -91,6 +91,7 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
           {deleteButton}
         </td>
         <td>{Pbase.name}</td>
+        <td>{Pbase.gender}</td>
         <td>{Pbase.move1}</td>
         <td>{Pbase.move2}</td>
         <td>{Pbase.move3}</td>

@@ -96,6 +96,7 @@ model UserSaveData {
   PokemonID        Int
   //視認性向上のためにポケモン名は保存
   PokemonName      String?
+  gender           String
   move1            Int
   move2            Int
   move3            Int

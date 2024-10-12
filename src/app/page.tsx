@@ -91,6 +91,7 @@ const Home = () => {
               <tr className="text-white">
                 <td></td>
                 <td>ポケモン</td>
+                <td>せいべつ</td>
                 <td>わざ1</td>
                 <td>わざ2</td>
                 <td>わざ3</td>

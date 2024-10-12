@@ -1,4 +1,4 @@
-import { PBaseProps, RequestPokemonData, useResponseType } from "@/types";
+import { BaseStatus, GenderType, PBaseProps, RequestPokemonData, useResponseType } from "@/types";
 
 function reducer_P_Datas(state: PBaseProps[], action: any) {
   switch(action.type) {
@@ -71,9 +71,19 @@ interface Request_TERATYPEINFO {
   teraTypeCurrent: number | null
 }
 
+// レスポンスデータ
+interface Response_BaseOption {
+  level: number,
+  gender: GenderType,
+  ivs: BaseStatus,
+  evs: BaseStatus
+}
+
 type RequestData = Request_DEX | Request_SPECINFO | Request_TYPEINFO | 
 Request_ITEMINFO | Request_ABILITYINFO | Request_NATUREINFO | Request_MOVEINFO | 
 Request_TERATYPEINFO;
+
+type ResponseData = Response_BaseOption;
 
 async function reducer_RequestPokemonData(action: ActionDispatch) {
   let requestData = action.payload;
@@ -369,71 +379,107 @@ async function reducer_DBRequest(action:GetAction , requestData: RequestData) {
   }
 };
 
-type CreateMode = "FETCH";
+type CreateMode = "FETCH" | "FILE_IMPORT";
 function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PBaseProps | null {
   let res: PBaseProps;
+
+  let res_dex;
+  let res_spec;
+  let res_type;
+  let res_item;
+  let res_ability;
+  let res_nature;
+  let res_move;
+  let res_teratype;
+  
+  let res_basedata: ResponseData;
+
+  if(option.length === 0) return null;
+  res_dex = option[0];
+  res_spec = option[1];
+  res_type = option[2];
+  res_item = option[3];
+  res_ability = option[4];
+  res_nature = option[5];
+  res_move = option[6];
+  res_teratype = option[7];
+
   switch(mode) {
+    case "FILE_IMPORT":
+      res_basedata = option[8] as ResponseData;
+      break;
     case "FETCH":
-      if(option.length === 0) return null;
-      let res_dex = option[0];
-      let res_spec = option[1];
-      let res_type = option[2];
-      let res_item = option[3];
-      let res_ability = option[4];
-      let res_nature = option[5];
-      let res_move = option[6];
-      let res_teratype = option[7];
-      let res_basedata = option[8];
-
-      // P_Base に格納するデータ
-      res = {
-        id: db_id,
-        nationalDexAPI: res_dex.nationalDexAPI,
-        name: res_dex.nameJA,
-        move1: res_move[0].moveName,
-        move2: res_move[1].moveName,
-        move3: res_move[2].moveName,
-        move4: res_move[3].moveName,
-        ability: res_ability.abilityName,
-        item: res_item.itemName,
-        nature: res_nature.natureName,
-        teratype: res_teratype.typeName,
-
-        level: res_basedata.level,
-        gender: res_basedata.gender,
+      res_basedata = {
+        level: option[8].level as number,
+        gender: option[8].gender as GenderType,
         ivs: {
-          hp: res_basedata.ivs.hp,
-          attack: res_basedata.ivs.attack,
-          defense: res_basedata.ivs.defense,
-          spattack: res_basedata.ivs.spattack,
-          spdefense: res_basedata.ivs.spdefense,
-          speed: res_basedata.ivs.speed
+          hp: Number(option[8].ivs.split('/')[0]) as number,
+          attack: Number(option[8].ivs.split('/')[1]) as number,
+          defense: Number(option[8].ivs.split('/')[2]) as number,
+          spattack: Number(option[8].ivs.split('/')[3]) as number,
+          spdefense: Number(option[8].ivs.split('/')[4]) as number,
+          speed: Number(option[8].ivs.split('/')[5]) as number
         },
         evs: {
-          hp: res_basedata.evs.hp,
-          attack: res_basedata.evs.attack,
-          defense: res_basedata.evs.defense,
-          spattack: res_basedata.evs.spattack,
-          spdefense: res_basedata.evs.spdefense,
-          speed: res_basedata.evs.speed
-        },
-        // 読み込む際には id なので再度 IDチェックで取得
-        innerData: {
-          nationalDexAPI: res_dex.nationalDexAPI,
-          move1ID: res_move[0].moveID,
-          move2ID: res_move[1].moveID,
-          move3ID: res_move[2].moveID,
-          move4ID: res_move[3].moveID,
-          abliityID: res_ability.abilityID,
-          itemID: res_item.itemID,
-          natureID: res_nature.natureID,
-          teraTypeID: res_teratype.typeID,
+          hp: Number(option[8].evs.split('/')[0]) as number,
+          attack: Number(option[8].evs.split('/')[1]) as number,
+          defense: Number(option[8].evs.split('/')[2]) as number,
+          spattack: Number(option[8].evs.split('/')[3]) as number,
+          spdefense: Number(option[8].evs.split('/')[4]) as number,
+          speed: Number(option[8].evs.split('/')[5]) as number
         }
-      };
-      return res;
+      }
+      break;
     default:
       return null;
   }
+
+  // P_Base に格納するデータ
+  res = {
+    id: db_id,
+    nationalDexAPI: res_dex.nationalDexAPI,
+    name: res_dex.nameJA,
+    move1: res_move[0].moveName,
+    move2: res_move[1].moveName,
+    move3: res_move[2].moveName,
+    move4: res_move[3].moveName,
+    ability: res_ability.abilityName,
+    item: res_item.itemName,
+    nature: res_nature.natureName,
+    teratype: res_teratype.typeName,
+
+    level: res_basedata.level,
+    gender: res_basedata.gender,
+    ivs: {
+      hp: res_basedata.ivs.hp,
+      attack: res_basedata.ivs.attack,
+      defense: res_basedata.ivs.defense,
+      spattack: res_basedata.ivs.spattack,
+      spdefense: res_basedata.ivs.spdefense,
+      speed: res_basedata.ivs.speed
+    },
+    evs: {
+      hp: res_basedata.evs.hp,
+      attack: res_basedata.evs.attack,
+      defense: res_basedata.evs.defense,
+      spattack: res_basedata.evs.spattack,
+      spdefense: res_basedata.evs.spdefense,
+      speed: res_basedata.evs.speed
+    },
+    // 読み込む際には id なので再度 IDチェックで取得
+    innerData: {
+      nationalDexAPI: res_dex.nationalDexAPI,
+      move1ID: res_move[0].moveID,
+      move2ID: res_move[1].moveID,
+      move3ID: res_move[2].moveID,
+      move4ID: res_move[3].moveID,
+      abliityID: res_ability.abilityID,
+      itemID: res_item.itemID,
+      natureID: res_nature.natureID,
+      teraTypeID: res_teratype.typeID,
+    }
+  };
+  return res;
 }
 
 export { reducer_P_Datas, reducer_RequestPokemonData, reducer_DBRequest , Create_PBaseProps };

@@ -15,6 +15,7 @@ export interface PBaseProps_InnerData {
 export interface PBaseProps {
   nationalDexAPI: number;
   name: string;
+  gender: GenderType;
   move1: string;
   move2: string;
   move3: string;
@@ -24,7 +25,6 @@ export interface PBaseProps {
   nature: string;
   teratype: string;
   level?: number;
-  gender?: GenderType;
   id?: number;
   ivs: BaseStatus;
   evs: BaseStatus;
@@ -129,6 +129,7 @@ export interface DataBaseStat {
 
 export interface RequestPokemonData {
   nationalAPI: number,
+  gender: GenderType,
   move1: number,
   move2: number,
   move3: number,
@@ -145,7 +146,6 @@ export interface RequestPokemonData {
   natureBase?: number,
   teraTypeBase?: number,
   level?: number,
-  gender?: GenderType,
 };
 
 //TODO Gender data add
@@ -153,6 +153,7 @@ export interface RequestSavePokemonData {
   column: number,
   nationalAPI: number
   pokemonName: string,
+  gender: GenderType,
   move1: number,
   move2: number,
   move3: number,

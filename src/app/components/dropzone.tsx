@@ -91,7 +91,7 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
       console.log(newFetchDataList);
 
       newFetchDataList.forEach((res) => {
-        let newPBase = Create_PBaseProps("FETCH", res);        // 追加
+        let newPBase = Create_PBaseProps("FILE_IMPORT", res);        // 追加
         dispatch_P_datas({ type: "ADD", payload: newPBase });
       });
       // 追加データをリセットする

@@ -86,6 +86,7 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
           column: index + 1,
           nationalAPI: Number(data.innerData.nationalDexAPI),
           pokemonName: data.name,
+          gender: data.gender,
           move1: Number(data.innerData.move1ID),
           move2: Number(data.innerData.move2ID),
           move3: Number(data.innerData.move3ID),
