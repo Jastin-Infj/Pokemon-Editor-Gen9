@@ -106,6 +106,11 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
+              {P_datas.length === 0 ? 
+                <tr>
+                  <td colSpan={14} className="text-center">No Data</td>
+                </tr> : null
+              }
               <P_baseList P_datas={P_datas} dispatch_P_datas={dispatch_P_datas} user_Data={User} />
             </tbody>
           </table>

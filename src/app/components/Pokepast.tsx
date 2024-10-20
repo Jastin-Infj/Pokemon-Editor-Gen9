@@ -38,7 +38,7 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
       }
 
       //TODO 後ほど修正
-      let ivsText = `31/0/31/15/23/31`;
+      let ivsText = `${data.ivs.hp}/${data.ivs.attack}/${data.ivs.defense}/${data.ivs.spattack}/${data.ivs.spdefense}/${data.ivs.speed}`;
       let ivs = ivsText.split('/',6);
       let ivs_active = ivs.map((iv , index) => {
         if(iv === '31') return true;
@@ -63,7 +63,7 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
         text_ivs = `IVs: ${ivs_active.join(' / ')}\n`;
       }
 
-      let evsText = `252/252/4/0/0/0`;
+      let evsText = `$`;
       let evs = evsText.split('/',6);
       let evs_active = evs.map((ev , index) => {
         if(ev === '0') return true;
@@ -105,16 +105,16 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
       move4 = CMF.toReplaceHyphenWithSpace(move4);
 
       let format = 
-        `${textPokemon}` +
-        `${text_ivs}` +
-        `${text_evs}` +
-        `Ability: ${ability}\n` +
-        `Level: ${level}\n` + 
-        `${nature} Nature\n` +
-        `- ${move1}\n` +
-        `- ${move2}\n` +
-        `- ${move3}\n` +
-        `- ${move4}\n` ;
+        `${textPokemon} ` +
+        `${text_ivs} ` +
+        `${text_evs} ` +
+        `Ability: ${ability} \n` +
+        `Level: ${level} \n` + 
+        `${nature} Nature \n` +
+        `- ${move1} \n` +
+        `- ${move2} \n` +
+        `- ${move3} \n` +
+        `- ${move4} \n` ;
       
       return format;
     }

@@ -108,6 +108,7 @@ const Access = async () => {
     }
   }
 
+  //TODO 取得ものを確認
   const handleItem = async (): Promise<PokemonAPIObject[]> => {
     const api = new PokemonClient();
     let allItem:PokemonAPIObject[] = [];
