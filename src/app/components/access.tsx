@@ -108,7 +108,7 @@ const Access = async () => {
     }
   }
 
-  //TODO 取得ものを確認
+  //TODO Gen8 になっているため Gen9 を対応させる
   const handleItem = async (): Promise<PokemonAPIObject[]> => {
     const api = new PokemonClient();
     let allItem:PokemonAPIObject[] = [];

@@ -40,7 +40,6 @@ export async function GET(req: NextApiRequest) {
     result.push(move2res);
     result.push(move3res);
     result.push(move4res);
-    console.log(result);
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json({error: error});
