@@ -26,4 +26,12 @@ export namespace CommonMyFunc {
     const reversedHexstr = reversedBytes.join('');
     return reversedHexstr;
   }
+
+  export function showLoading(timeCount: number , message?: string): void {
+    setTimeout(() => {
+      if(message) {
+        console.log(message);
+      }
+    }, timeCount);
+  }
 }

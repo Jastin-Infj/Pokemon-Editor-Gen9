@@ -6,7 +6,9 @@ import { DataAbility, DataBaseStat , DataMoveObject, DataType, PokemonAPIObject,
 import fs from 'fs';
 import { Prisma } from "@prisma/client";
 import { SetStateAction } from "react";
-import { HttpStatusCode } from "axios";
+import { all, HttpStatusCode } from "axios";
+import { time } from "console";
+import { CommonMyFunc } from "./common/func";
 
 const JSON_POKEMON_DEX_PATH = "./src/json/pokemonDex.json";
 const JSON_POKEMON_INFO_PATH = "./src/json/pokemonInfo.json";
@@ -45,14 +47,18 @@ const Access = async () => {
     const api = new PokemonClient(); // create a PokemonClient
     let offset = 0;
     const LIMIT = 100;
-
     // 100件ずつ取得する
     while (true) {
-      const pokemonList = await api.listPokemons(offset, LIMIT);
-      allPokemon = allPokemon.concat(pokemonList.results);
-      offset += LIMIT;
-      if (pokemonList.results.length < LIMIT) {
-        return allPokemon;
+      try {
+        const pokemonList = await api.listPokemons(offset, LIMIT);
+        allPokemon = allPokemon.concat(pokemonList.results);
+        offset += LIMIT;
+        if (pokemonList.results.length < LIMIT) {
+          return allPokemon;
+        }
+      } catch (error) {
+        console.error("Error processing DexinfoAPI...", error);
+        throw error;
       }
     }
   };
@@ -186,17 +192,25 @@ const Access = async () => {
     console.log(``);
     console.log("--- Start ---");
 
+
     // ポケモン図鑑情報を取得
     if(fs.existsSync(JSON_POKEMON_DEX_PATH)) {
       const fileContent = fs.readFileSync(JSON_POKEMON_DEX_PATH , 'utf-8');
       const json: PokemonAPIObject[] = JSON.parse(fileContent);
       allDexInfo = json;
+      console.log("--- DexInfo Fin ---");
     } else {
-      const dexInfo = await handlePokemon();
-      fs.writeFileSync(JSON_POKEMON_DEX_PATH, JSON.stringify(dexInfo, null, 2));
-      allDexInfo = dexInfo;
+      const dexInfoAPI = async (): Promise<void> => {
+        //! API側のリクエストでサーバーダウンするため、jsonファイルで保存する
+        allDexInfo = await handlePokemon();
+        fs.writeFileSync(JSON_POKEMON_DEX_PATH, JSON.stringify(allDexInfo, null, 2));
+      };
+      let promise = dexInfoAPI();
+      await Promise.all([promise]).then(() => {
+        console.log("--- DexInfo Fin ---");
+      });
     }
-    console.log("--- DexInfo Fin ---");
+
 
     // すでにファイルが存在する場合はjson読み込む
     if(fs.existsSync(JSON_POKEMON_INFO_PATH)){
@@ -212,7 +226,7 @@ const Access = async () => {
       );
       fs.writeFileSync(JSON_POKEMON_INFO_PATH, JSON.stringify(PokemonList, null, 2));
       allPokemonInfo = PokemonList;
-      console.log(allPokemonInfo);
+      // console.log(allPokemonInfo);
     }
     console.log("--- PokemonList Fin ---");
 
@@ -273,8 +287,17 @@ const Access = async () => {
                   }
                 });
 
-                //! 日本語名がない場合は指定する
+                // 日本語名がない場合は指定する
                 if(nameJA === "" && nameJA_Hrkt === "") is_form_name = false;
+
+                if(!is_form_name) {
+                  // ID 10065
+                  switch(id) {
+                    case 10065:
+                      //todo 10065 は誰
+                      break;
+                  }
+                }
 
                 let output_format = {
                   id: MasterID,
@@ -286,10 +309,8 @@ const Access = async () => {
                 if(!is_form_name)  allPokemonForms_Jan_Edit.push(output_format);
               });
             }); // lang get promise end
-
-
           }) // 1 await End
-        ).then(() => {
+        ).then((res) => {
           fs.writeFileSync(JSON_POKEMON_FORMS_JA_PATH, JSON.stringify(allPokemonForms_Jan, null, 2));
           fs.writeFileSync(JSON_POKEMON_FORMS_JA_EDIT_PATH, JSON.stringify(allPokemonForms_Jan_Edit, null, 2));
           console.log("--- PokemonDexLangage Fin ---");
