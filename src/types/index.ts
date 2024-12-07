@@ -29,7 +29,7 @@ export interface PBaseProps {
   ivs: BaseStatus;
   evs: BaseStatus;
 
-  isClicked: Boolean | null;
+  isClicked: boolean | undefined;
   // 内部データ
   innerData: PBaseProps_InnerData;
 };
