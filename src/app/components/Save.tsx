@@ -110,6 +110,10 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
           params.param.id = data.id;
         }
 
+        if(!data.isClicked) {
+          setIsClicked(false);
+        }
+
         try {
           const req = await fetch('/api/save', {
             method: 'POST',

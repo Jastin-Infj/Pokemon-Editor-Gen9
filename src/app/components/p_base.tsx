@@ -17,6 +17,7 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
 
   // チェックボックスの状態を変更
   const handleChange = () => {
+    Pbase.isClicked = !isChecked;
     setIsChecked(!isChecked);
   };
 

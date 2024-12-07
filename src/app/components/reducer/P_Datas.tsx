@@ -444,7 +444,7 @@ function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PB
     move3: res_move[2].moveName,
     move4: res_move[3].moveName,
     ability: res_ability.abilityName,
-    item: res_item.itemName,
+    item: res_item ? res_item.itemName : null,
     nature: res_nature.natureName,
     teratype: res_teratype.typeName,
 
@@ -466,6 +466,7 @@ function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PB
       spdefense: res_basedata.evs.spdefense,
       speed: res_basedata.evs.speed
     },
+    isClicked: false,
     // 読み込む際には id なので再度 IDチェックで取得
     innerData: {
       nationalDexAPI: res_dex.nationalDexAPI,
@@ -474,7 +475,7 @@ function Create_PBaseProps(mode: CreateMode , option?: any , db_id?: number): PB
       move3ID: res_move[2].moveID,
       move4ID: res_move[3].moveID,
       abliityID: res_ability.abilityID,
-      itemID: res_item.itemID,
+      itemID: res_item ? res_item.itemID : null,
       natureID: res_nature.natureID,
       teraTypeID: res_teratype.typeID,
     }
