@@ -112,6 +112,7 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
 
         if(!data.isClicked) {
           setIsClicked(false);
+          return;
         }
 
         try {
