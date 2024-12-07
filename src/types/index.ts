@@ -7,7 +7,7 @@ export interface PBaseProps_InnerData {
   move3ID: number,
   move4ID: number,
   abliityID: number,
-  itemID: number,
+  itemID: number | null,
   natureID: number,
   teraTypeID: number
 }
@@ -28,6 +28,8 @@ export interface PBaseProps {
   id?: number;
   ivs: BaseStatus;
   evs: BaseStatus;
+
+  isClicked: boolean | undefined;
   // 内部データ
   innerData: PBaseProps_InnerData;
 };

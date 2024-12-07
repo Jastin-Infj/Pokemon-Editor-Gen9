@@ -16,7 +16,7 @@ const Delete: React.FC<Props> = ({dispatch_P_datas}) => {
     if(!isClicked) return;
     dispatch_P_datas({type: "DELETE_ALL"});
     setIsClicked(false);
-  }, [isClicked]);
+  }, [isClicked , dispatch_P_datas]);
 
   return (
     <>

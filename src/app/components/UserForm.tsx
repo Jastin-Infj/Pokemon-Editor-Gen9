@@ -24,7 +24,7 @@ const UserForm: React.FC<Props> = ({User_dispatch , UserLogined , P_datas_dispat
   useEffect(() => {
     FormUser_dispatch({type: "CHANGE", key: "username", payload: username as string});
     console.log("username changed to " + username);
-  }, [username]);
+  }, [username , FormUser_dispatch]);
 
   const handleChange_Username = (event: React.ChangeEvent<HTMLInputElement>) => {
     if(usernameRef.current?.value === username) return;
@@ -41,7 +41,7 @@ const UserForm: React.FC<Props> = ({User_dispatch , UserLogined , P_datas_dispat
   useEffect(() => {
     FormUser_dispatch({type: "CHANGE", key: "password", payload: password as string});
     console.log("password changed to " + password);
-  }, [password]);
+  }, [password, FormUser_dispatch]);
 
   useEffect(() => {
     if(!isSubmit) return;
@@ -93,7 +93,7 @@ const UserForm: React.FC<Props> = ({User_dispatch , UserLogined , P_datas_dispat
       setIsSubmit(false);
     };
     fetchLogin();
-  }, [isSubmit]);
+  }, [isSubmit , FormUser , P_datas_dispatch , UserLogined , User_dispatch]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement> ) => {
     // ページ遷移を防ぐ

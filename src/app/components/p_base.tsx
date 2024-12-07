@@ -11,12 +11,13 @@ interface Props {
 
 const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
   // チェックボックスの状態を管理
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(Pbase.isClicked);
   // 削除ボタンのスタイルを定義
   const [isDelete, setIsDelete] = useState(false);
 
   // チェックボックスの状態を変更
   const handleChange = () => {
+    Pbase.isClicked = !isChecked;
     setIsChecked(!isChecked);
   };
 
@@ -81,7 +82,7 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
       setIsChecked(false);
     }
     deleteData();
-  }, [isDelete]);
+  }, [isDelete , Pbase , dispatch_P_datas]);
   
   if(!isDelete) {
     return (

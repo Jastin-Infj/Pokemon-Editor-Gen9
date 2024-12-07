@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
-import { NextApiRequest } from "next";
+import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   let url = new URL(String(req.url));
   const id = url.searchParams.get("itemid") as string;
   try {

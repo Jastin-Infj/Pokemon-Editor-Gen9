@@ -7,6 +7,16 @@ export namespace CommonMyFunc {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
+  // 特定の文字を軸に分割する
+  export function toStrSplit(str: string , option: string): string[] {
+    return str.split(option);
+  }
+
+  // 特定の配列を文字列化する
+  export function toStrJoin(str: string[] , option: string): string {
+    return str.join(option);
+  }
+
   // ハイフンをスペースに変換する
   export function toReplaceHyphenWithSpace(str: string): string {
     return str.replace(/-/g, ' ');
@@ -25,5 +35,13 @@ export namespace CommonMyFunc {
     const reversedBytes = bytes.reverse();
     const reversedHexstr = reversedBytes.join('');
     return reversedHexstr;
+  }
+
+  export function showLoading(timeCount: number , message?: string): void {
+    setTimeout(() => {
+      if(message) {
+        console.log(message);
+      }
+    }, timeCount);
   }
 }

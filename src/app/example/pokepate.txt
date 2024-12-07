@@ -42,8 +42,6 @@ Quirky Nature
 - Solar Beam
 
 
-
-
 Azelf
 IVs: 19 HP / 13 Atk / 19 Def
 EVs: 252 Atk / 45 SpA / 45 SpD
@@ -120,3 +118,124 @@ Quirky Nature
 - Extrasensory
 - Nasty Plot
 - Psychic
+
+-------------------------------
+
+Talonflame @ Oranguru fur 
+Ability: Gale Wings
+EVs: 252 Atk / 4 Def / 252 Spe
+Jolly Nature
+- Brave Bird
+- Flare Blitz
+- Swords Dance
+- Roost
+
+Ivysaur @ Oranguru fur 
+IVs: 2 SpA / 15 SpD 
+EVs: 4 SpD 
+Ability: Chlorophyll 
+Level: 100 
+Sassy Nature 
+- Flamethrower 
+- Leech seed 
+- Protect 
+- Temper flare 
+
+Azelf
+IVs: 19 HP / 13 Atk / 19 Def
+EVs: 252 Atk / 45 SpA / 45 SpD
+Ability: Levitate
+Level: 50
+Quirky Nature
+- Imprison
+- Extrasensory
+- Nasty Plot
+- Psychic
+
+Flapple @ Fist plate
+ IVs: 19 Atk / 28 SpA
+ EVs: $ HP
+ Ability: Gluttony 
+Level: 75 
+Bold Nature 
+- Grav apple 
+- Dragon breath 
+- Dragon rush 
+- Trailblaze
+
+Flapple @ Fist plate
+ IVs: 19 Atk / 28 SpA
+ EVs: $ HP
+ Ability: Gluttony 
+Level: 75 
+Bold Nature 
+- Grav apple 
+- Dragon breath 
+- Dragon rush 
+- Trailblaze
+
+Flapple @ Fist plate
+ IVs: 19 Atk / 28 SpA
+ EVs: $ HP
+ Ability: Gluttony 
+Level: 75 
+Bold Nature 
+- Grav apple 
+- Dragon breath 
+- Dragon rush 
+- Trailblaze
+
+Flapple @ Fist plate 
+IVs: 19 Atk / 28 SpA 
+EVs: $ HP 
+Ability: Gluttony 
+Level: 75 
+Bold Nature 
+- Grav apple 
+- Dragon breath 
+- Dragon rush 
+- Trailblaze
+
+Flapple @ Fist plate 
+IVs: 19 Atk / 28 SpA 
+EVs: $ HP 
+Ability: Gluttony 
+Level: 75 
+Bold Nature 
+- Grav apple 
+- Dragon breath 
+- Dragon rush 
+- Trailblaze
+
+Flapple @ Fist plate
+IVs: 19 Atk / 28 SpA
+EVs: $ HP
+Ability: Gluttony
+Level: 75
+Bold Nature
+- Grav apple
+- Dragon breath
+- Dragon rush
+- Trailblaze
+
+Flapple @ Fist Plate 
+IVs: 19 Atk / 28 SpA 
+EVs: $ HP 
+Ability: Gluttony 
+Level: 75 
+Bold Nature 
+- Grav apple 
+- Dragon breath 
+- Dragon rush 
+- Trailblaze
+
+Bulbasaur @ Oranguru Fur 
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe 
+EVs: $ HP 
+Ability: Chlorophyll 
+Level: 50 
+Sassy Nature 
+- Temper Flare 
+- Flamethrower 
+- Leech Seed 
+- Protect

@@ -9,11 +9,33 @@ interface Props {
 
 const Pokepast: React.FC<Props> = ({P_datas}) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
+  const [isLinked , setIsLinked] = useState<boolean>(false);
   
   useEffect(() => {
     if(!isClicked) return;
     console.log(`Pokepast clicked`);
-    console.log(P_datas);
+
+    const toStrPokePasteFormat = (str: string): string => {
+      let temp: string[];
+      str = CMF.toReplaceHyphenWithSpace(str);
+      temp = CMF.toStrSplit(str , " ");
+      temp = temp.map(ele => {
+        return CMF.toCapitalizeFirstLetter(ele);
+      });
+      str = CMF.toStrJoin(temp , " ");
+      return str;
+    }
+
+    const copyToClipboard = async (text: string) => {
+      if(navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch(err) {
+          console.error("クリップボードへのコピーに失敗しました:", err);
+        }
+      }
+    }
+
     const Convert_toPokePastData = async (data: PBaseProps) => {
       let nationalAPI = data.nationalDexAPI;
 
@@ -28,17 +50,17 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
 
       // res_pokename から nameEN を取得
       let nameEN = CMF.toCapitalizeFirstLetter(res_pokename.nameEN);
-      let textPokemon = `${nameEN}\n`;
+      let textPokemon = `${nameEN}`;
       let item = data.item;
-      if(item) {
-        item = CMF.toCapitalizeFirstLetter(data.item as string);
-        item = CMF.toReplaceHyphenWithSpace(item);
+      let itemNameupper: string[] | null = null;
+
+      if(data.item) {
+        item = toStrPokePasteFormat(data.item);
         item = `@ ${item}`;
-        textPokemon = `${nameEN} ${item}\n`;
+        textPokemon = `${nameEN} ${item}`;
       }
 
-      //TODO 後ほど修正
-      let ivsText = `31/0/31/15/23/31`;
+      let ivsText = `${data.ivs.hp}/${data.ivs.attack}/${data.ivs.defense}/${data.ivs.spattack}/${data.ivs.spdefense}/${data.ivs.speed}`;
       let ivs = ivsText.split('/',6);
       let ivs_active = ivs.map((iv , index) => {
         if(iv === '31') return true;
@@ -58,12 +80,12 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
         }
       });
       ivs_active = ivs_active.filter((iv) => iv !== true);
-      let text_ivs = ``;
+      let text_ivs = "";
       if(ivs_active.length !== 0) {
-        text_ivs = `IVs: ${ivs_active.join(' / ')}\n`;
+        text_ivs = `IVs: ${ivs_active.join(' / ')}`;
       }
 
-      let evsText = `252/252/4/0/0/0`;
+      let evsText = `$`;
       let evs = evsText.split('/',6);
       let evs_active = evs.map((ev , index) => {
         if(ev === '0') return true;
@@ -85,59 +107,77 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
       evs_active = evs_active.filter((ev) => ev !== true);
       let text_evs = ``;
       if(evs_active.length !== 0) {
-        text_evs = `EVs: ${evs_active.join(' / ')}\n`;
+        text_evs = `EVs: ${evs_active.join(' / ')}`;
       }
 
       let ability = CMF.toCapitalizeFirstLetter(data.ability);
       let level = String(data.level);
       let nature =  CMF.toCapitalizeFirstLetter(data.nature);
 
-      let move1 = CMF.toCapitalizeFirstLetter(data.move1);
-      move1 = CMF.toReplaceHyphenWithSpace(move1);
-
-      let move2 = CMF.toCapitalizeFirstLetter(data.move2);
-      move2 = CMF.toReplaceHyphenWithSpace(move2);
-
-      let move3 = CMF.toCapitalizeFirstLetter(data.move3);
-      move3 = CMF.toReplaceHyphenWithSpace(move3);
-
-      let move4 = CMF.toCapitalizeFirstLetter(data.move4);
-      move4 = CMF.toReplaceHyphenWithSpace(move4);
+      let move1 , move2 , move3 , move4;
+      move1 = toStrPokePasteFormat(data.move1);
+      move2 = toStrPokePasteFormat(data.move2);
+      move3 = toStrPokePasteFormat(data.move3);
+      move4 = toStrPokePasteFormat(data.move4);
 
       let format = 
-        `${textPokemon}` +
-        `${text_ivs}` +
-        `${text_evs}` +
-        `Ability: ${ability}\n` +
-        `Level: ${level}\n` + 
-        `${nature} Nature\n` +
-        `- ${move1}\n` +
-        `- ${move2}\n` +
-        `- ${move3}\n` +
-        `- ${move4}\n` ;
+        `${textPokemon} \n` +
+        `${text_ivs} \n` +
+        `${text_evs} \n` +
+        `Ability: ${ability} \n` +
+        `Level: ${level} \n` + 
+        `${nature} Nature \n` +
+        `- ${move1} \n` +
+        `- ${move2} \n` +
+        `- ${move3} \n` +
+        `- ${move4}`;
       
       return format;
     }
 
     let promise = P_datas.map(async (data) => {
-      return await Convert_toPokePastData(data);
+      if(data.isClicked) {
+        return await Convert_toPokePastData(data);
+      } else {
+        return Promise.resolve("");
+      }
     });
-    Promise.all(promise).then((res) => {
-      console.log(res);
+    Promise.all(promise).then(async (res) => {
+      let target = "";
+      let result = res.filter(element => {
+        return element !== ""; 
+      });
+      let format = CMF.toStrJoin(result , "\n\n");
+      await copyToClipboard(format);
       setIsClicked(false);
     });
-  }, [isClicked]);
+  }, [isClicked , P_datas]);
+
+  useEffect(() => {
+    if(!isLinked) return;
+    setIsLinked(false);
+  } , [isLinked]);
 
   const handleClick = () => {
     setIsClicked(true);
+  };
+
+  const handleLink = () => {
+    window.open("https://pokepast.es/");
+    setIsLinked(true);
   };
 
   return (
     <>
       <button 
         onClick={handleClick}
-        className='bg-black text-white rounded-sm'>
-          Pokepast to link create
+        className='mx-4 bg-black text-white rounded-sm'>
+          PokePaste to Text
+      </button>
+      <button
+          onClick={handleLink}
+          className='mx-4 bg-black text-white rounded-sm'>
+          PokePaste Link Go
       </button>
     </>
   )
