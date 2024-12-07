@@ -1,13 +1,12 @@
 import prisma from "@/lib/prisma";
-import { NextApiRequest } from "next";
-import { NextResponse } from "next/server";
+import { NextRequest , NextResponse } from "next/server";
 
 interface MoveResponse {
   moveID: number;
   moveName: string | null;
 };
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   let url = new URL(String(req.url));
   let move1id = url.searchParams.get("move1id") as string;
   let move2id = url.searchParams.get("move2id") as string;

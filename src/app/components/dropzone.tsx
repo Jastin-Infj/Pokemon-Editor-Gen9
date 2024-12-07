@@ -102,7 +102,7 @@ const MyDropzone:React.FC<Props> = ({dispatch_P_datas , P_datas}) => {
     };
 
     fetchData();
-  },[requestpokemonData]);
+  },[requestpokemonData , dispatch_P_datas]);
 
   const onDrop = (acceptedFiles: File[]) => {
     console.log("onDrop called");

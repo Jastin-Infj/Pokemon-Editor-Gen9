@@ -132,7 +132,7 @@ const Save:React.FC<Props> = ({P_datas , user , User_dispatch}) => {
     };
 
     handleSave();
-  }, [isClicked]);
+  }, [isClicked , P_datas , user]);
 
   return (
     <>

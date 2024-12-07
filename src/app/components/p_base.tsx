@@ -82,7 +82,7 @@ const P_base: React.FC<Props> = ({Pbase , dispatch_P_datas , user_Data}) => {
       setIsChecked(false);
     }
     deleteData();
-  }, [isDelete]);
+  }, [isDelete , Pbase , dispatch_P_datas]);
   
   if(!isDelete) {
     return (

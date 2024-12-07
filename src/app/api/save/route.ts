@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { RequestSavePokemonData } from "@/types";
-import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
 async function create(param: RequestSavePokemonData) {
@@ -115,7 +114,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   const url = new URL(String(req.url));
   const userID = url.searchParams.get("userID") as string;
   try {

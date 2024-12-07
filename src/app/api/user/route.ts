@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { UserData } from "@/types";
-import { NextApiRequest } from "next";
 import { NextRequest , NextResponse } from "next/server";
 
 async function create(param: UserData) {
@@ -29,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   const url = new URL(String(req.url));
   const body = {
     userID: url.searchParams.get("userID") as string,

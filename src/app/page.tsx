@@ -57,7 +57,7 @@ const Home = () => {
       console.log(error);
     });
     
-  }, []);
+  }, [API_data , importData]);
 
   useEffect(() => {
     if(P_datas.length === 0) return;

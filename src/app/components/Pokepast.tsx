@@ -151,7 +151,7 @@ const Pokepast: React.FC<Props> = ({P_datas}) => {
       await copyToClipboard(format);
       setIsClicked(false);
     });
-  }, [isClicked]);
+  }, [isClicked , P_datas]);
 
   useEffect(() => {
     if(!isLinked) return;
